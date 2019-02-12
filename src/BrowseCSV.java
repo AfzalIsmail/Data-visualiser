@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 
 public class BrowseCSV extends Application{
@@ -24,7 +25,9 @@ public class BrowseCSV extends Application{
 
     MenuItem browseFile, save, exit,manual;
 
-    Button button1;
+    Button button1, test;
+
+    ArrayList<DataFile> files;
 
 
 
@@ -38,6 +41,8 @@ public class BrowseCSV extends Application{
     public void start(Stage primaryStage) throws Exception {
 
         primaryStage.setTitle("Data Visualizer");
+
+        files = new ArrayList<>();
 
         //layout of application
         borderPane = new BorderPane();
@@ -56,10 +61,19 @@ public class BrowseCSV extends Application{
         manual = new MenuItem("Help");
 
         //Sample button
-        button1 = new Button("test");
+        button1 = new Button("Browse file");
 
-        //opens the file browser
-        button1.setOnAction(e -> fileBrowser(primaryStage));
+
+        //opens the file browser and saves each file selected in an arraylist
+        button1.setOnAction(e -> {
+
+            fileBrowser(primaryStage, files);
+
+            for(DataFile file: files){
+                System.out.println(file.getName());
+                System.out.println(file.getPath());
+            }
+        });
 
         //assigning items to file tab
         file.getItems().addAll(browseFile,save);
@@ -85,10 +99,10 @@ public class BrowseCSV extends Application{
     }
 
     /**
-     * Function to open file browser
+     * Function to open file browser and store the name and path of each file in an arraylist
      * @param stage
      */
-    public void fileBrowser(Stage stage){
+    public void fileBrowser(Stage stage, ArrayList<DataFile> paths){
 
         DataFile dataFile = new DataFile();
 
@@ -96,13 +110,17 @@ public class BrowseCSV extends Application{
         fileChooser.setTitle("Browse a file");
         File selectedFile = fileChooser.showOpenDialog(stage);
 
-        dataFile.setName(selectedFile.toString());
+        dataFile.setName(selectedFile.getName());
         dataFile.setPath(selectedFile.getPath());
 
-        System.out.println(selectedFile.getName());
-        System.out.println(selectedFile.getPath());
+        paths.add(dataFile);
+
+        //System.out.println(dataFile.getName());
+        //System.out.println(dataFile.getPath());
+
 
     }
+
 
 
 }

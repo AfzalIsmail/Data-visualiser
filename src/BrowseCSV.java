@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -44,6 +45,10 @@ public class BrowseCSV extends Application{
 
     CheckBox columnHeaders;
 
+    ScrollBar scrollBar;
+
+    ScrollPane scrollPane;
+
 
 
     public static void main ( String[] args){
@@ -75,9 +80,6 @@ public class BrowseCSV extends Application{
         exit = new MenuItem("Exit");
         manual = new MenuItem("Help");
 
-        //Sample button
-        button1 = new Button("Display table");
-
         //tabpane
         tabPane = new TabPane();
 
@@ -91,24 +93,66 @@ public class BrowseCSV extends Application{
             fileBrowser(primaryStage, files);
 
             try {
-
+                //iterates over files arraylist
                 for (DataFile file : files) {
+
+                    //VBox that will contain the choice for the columns to be displayed
+                    VBox columnChoice = addVBox();
+
+                    //Sample button
+                    button1 = new Button("Display table");
 
                     path = file.getPath();
 
                     tab = new Tab(file.getName());
 
-                    tabPane.getTabs().add(tab);
+                    //read the header of the csv file
+                    try {
+                        columnNames = ReadCSV.readHeader(file.getPath());
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        System.out.println("Error to open file for column");
 
+                    }
 
-                    //backing up deleted files so that they can be used again if needed
-                    backupFiles.add(file);
+                    //checks that the number of columns in the data set does not exceed 60
+                    if (columnNames.length <= 60) {
 
-                    //remove file fro the arraylist once it has been opened
-                    //so that the tabpane does not duplicate the tabs
-                    files.remove(file);
+                        //Displays each column header in a checkbox on the left side of the UI
+                        for (int i = 0; i < columnNames.length; i++) {
+
+                            columnHeaders = new CheckBox(columnNames[i]);
+                            //left panel
+
+                            columnChoice.getChildren().add(columnHeaders);
+
+                        }
+
+                        //Displays button 1
+                        columnChoice.getChildren().add(button1);
+
+                        //setting the content of the tab to the choice of columns
+                        tab.setContent(columnChoice);
+
+                        //adding tab to tabPanes
+                        tabPane.getTabs().add(tab);
+
+                        //backing up deleted files so that they can be used again if needed
+                        backupFiles.add(file);
+
+                        //remove file fro the arraylist once it has been opened
+                        //so that the tabpane does not duplicate the tabs
+                        files.remove(file);
+
+                    }else{
+                        //display error if
+                        alertBox.display("Error", "The dataset contains more than 60 attributes");
+                    }
                 }
             }catch (Exception e1){
+                e1.printStackTrace();
+                System.out.println("Error to open file for column");
+                alertBox.display("Error","An error has occured when opening the file");
 
             }
 
@@ -119,9 +163,13 @@ public class BrowseCSV extends Application{
         });
 
 
-
         //Setting tab pane to top
         tabPane.setSide(Side.TOP);
+
+        //Make pane scrollable
+        scrollPane = new ScrollPane();
+        scrollPane.setContent(tabPane);
+
 
         //assigning items to file tab
         file.getItems().addAll(browseFile,save);
@@ -135,9 +183,6 @@ public class BrowseCSV extends Application{
 
         //setting nodes to border pane
         borderPane.setTop(menuBar);
-        //borderPane.setTop(button1);
-        //borderPane.setLeft(button1);
-        //borderPane.setLeft(leftpanel);
         borderPane.setCenter(tabPane);
 
         //creating new scene
@@ -161,6 +206,7 @@ public class BrowseCSV extends Application{
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Browse a file");
+        fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("CSV Files","*.csv"));
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         dataFile.setName(selectedFile.getName());
@@ -174,7 +220,23 @@ public class BrowseCSV extends Application{
 
     }
 
+    /**
+     * To add the choiceBox to a VBox to be displayed in the BorderPane
+     * @return vbox
+     */
+    public VBox addVBox(){
+        VBox vbox = new VBox();
+        vbox.setPadding(new Insets(10));
+        vbox.setSpacing(8);
 
+        Text title = new Text("Data columns");
+
+        vbox.getChildren().add(title);
+
+
+        return vbox;
+
+    }
 
 
 

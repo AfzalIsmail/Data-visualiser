@@ -1,13 +1,14 @@
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -27,8 +28,21 @@ public class BrowseCSV extends Application{
 
     Button button1, test;
 
-    ArrayList<DataFile> files;
+    ArrayList<DataFile> files, backupFiles;
 
+    Object [][] data;
+
+    TabPane tabPane;
+
+    Tab tab;
+
+    String path = null;
+
+    String[] columnNames = null;
+
+    TableView tableView;
+
+    CheckBox columnHeaders;
 
 
 
@@ -43,6 +57,7 @@ public class BrowseCSV extends Application{
         primaryStage.setTitle("Data Visualizer");
 
         files = new ArrayList<>();
+        backupFiles = new ArrayList<>();
 
         //layout of application
         borderPane = new BorderPane();
@@ -61,19 +76,52 @@ public class BrowseCSV extends Application{
         manual = new MenuItem("Help");
 
         //Sample button
-        button1 = new Button("Browse file");
+        button1 = new Button("Display table");
+
+        //tabpane
+        tabPane = new TabPane();
+
+
+
 
 
         //opens the file browser and saves each file selected in an arraylist
-        button1.setOnAction(e -> {
+        browseFile.setOnAction(e -> {
 
             fileBrowser(primaryStage, files);
 
-            for(DataFile file: files){
-                System.out.println(file.getName());
-                System.out.println(file.getPath());
+            try {
+
+                for (DataFile file : files) {
+
+                    path = file.getPath();
+
+                    tab = new Tab(file.getName());
+
+                    tabPane.getTabs().add(tab);
+
+
+                    //backing up deleted files so that they can be used again if needed
+                    backupFiles.add(file);
+
+                    //remove file fro the arraylist once it has been opened
+                    //so that the tabpane does not duplicate the tabs
+                    files.remove(file);
+                }
+            }catch (Exception e1){
+
             }
+
+            /*for(DataFile file: files){
+               System.out.println(file.getName());
+                System.out.println(file.getPath());
+            }*/
         });
+
+
+
+        //Setting tab pane to top
+        tabPane.setSide(Side.TOP);
 
         //assigning items to file tab
         file.getItems().addAll(browseFile,save);
@@ -83,9 +131,14 @@ public class BrowseCSV extends Application{
         //assigning menu tabs to menu bar
         menuBar.getMenus().addAll(file,help);
 
+
+
         //setting nodes to border pane
         borderPane.setTop(menuBar);
-        borderPane.setLeft(button1);
+        //borderPane.setTop(button1);
+        //borderPane.setLeft(button1);
+        //borderPane.setLeft(leftpanel);
+        borderPane.setCenter(tabPane);
 
         //creating new scene
         Scene scene = new Scene(borderPane, 1000, 600);
@@ -120,6 +173,8 @@ public class BrowseCSV extends Application{
 
 
     }
+
+
 
 
 

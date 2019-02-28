@@ -1,8 +1,12 @@
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.control.*;
-import javafx.geometry.*;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class alertBox {
 
@@ -20,18 +24,26 @@ public class alertBox {
         Label label = new Label();
 
         label.setText(message);
-        
+
+        Image warning = new Image("picture/warning.png");
+        ImageView warningView = new ImageView(warning);
+
+        warningView.setX(125);
+        warningView.setY(80);
+        warningView.setFitHeight(50);
+        warningView.setFitWidth(50);
+
         Button closeButton = new Button("Ok");
 
         closeButton.setOnAction(e -> window.close());
 
 
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(label, closeButton);
+        layout.getChildren().addAll(warningView,label, closeButton);
         //set alignment to center of window
         layout.setAlignment(Pos.CENTER);
 
-       // closeButton.setBorder(new Insets(30,10,10,10));
+        // closeButton.setBorder(new Insets(30,10,10,10));
 
         Scene scene = new Scene(layout);
         window.setScene(scene);

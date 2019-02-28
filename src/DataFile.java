@@ -1,17 +1,22 @@
-import java.util.List;
+import javafx.scene.control.CheckBox;
+
+import java.util.ArrayList;
 
 public class DataFile {
 
     private String name;
     private String path;
-    private int numAttr;
-    private String[] titles;
+    private int colNum;
+    private ArrayList<String> cNames;
+    private ArrayList<ColumnData> colData;
+    private ArrayList<CheckBox> checkBoxHeaders;
 
     public DataFile(){
         name = "null";
         path = "null";
-        numAttr = 0;
-        titles = new String[60];
+        colNum = 0;
+        colData = null;
+        checkBoxHeaders = null;
 
     }
 
@@ -31,19 +36,36 @@ public class DataFile {
         this.path = path;
     }
 
-    public int getNumAttr() {
-        return numAttr;
+    public int getColNum() {
+        return colNum;
     }
 
-    public void setNumAttr(int numAttr) {
-        this.numAttr = numAttr;
+    public void setColNum(int colNum) {
+        this.colNum = colNum;
     }
 
-    public String[] getTitles() {
-        return titles;
+    public ArrayList<String> getcNames() {
+        return cNames;
     }
 
-    public void setTitles(String[] titles) {
-        this.titles = titles;
+    public void setcNames(ArrayList<String> cNames) {
+        this.cNames = cNames;
+    }
+
+    public ArrayList<ColumnData> getColData() {
+        return colData;
+    }
+
+    public void setColData(ArrayList<ColumnData> colData) {
+        this.colData = colData;
+    }
+
+    public ArrayList<CheckBox> getCheckBoxHeaders() {
+        return checkBoxHeaders;
+    }
+
+    public void setCheckBoxHeaders(ArrayList<CheckBox> checkBoxHeaders) {
+        this.checkBoxHeaders = checkBoxHeaders;
     }
 }
+

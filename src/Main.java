@@ -1,14 +1,17 @@
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -18,7 +21,7 @@ import java.util.ArrayList;
 
 public class Main extends Application{
 
-    private BorderPane borderPane;
+    BorderPane borderPane;
 
     MenuBar menuBar;
 
@@ -26,7 +29,7 @@ public class Main extends Application{
 
     MenuItem browseFile, save, exit,manual;
 
-    Button button1;
+    Button displayTable, importFile, saveData;
 
     ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
@@ -58,6 +61,12 @@ public class Main extends Application{
 
     ArrayList<CheckBox> checkBoxes;
 
+    //ArrayList<GridPane> grids;
+
+    GridPane dataPane;
+
+    ScrollPane scrollData;
+
 
 
     public static void main ( String[] args){
@@ -81,6 +90,39 @@ public class Main extends Application{
         file = new Menu("File");
         help = new Menu("Help");
 
+        Image loadFile = new Image("picture/load.png");
+
+        ImageView loadFileView = new ImageView(loadFile);
+        loadFileView.setFitHeight(20);
+        loadFileView.setFitWidth(20);
+        importFile = new Button();
+        importFile.setOnMouseEntered(e -> importFile.setStyle("-fx-background-color: rgb(99, 99, 99)"));
+        importFile.setOnMouseExited(e -> importFile.setStyle("-fx-background-color: rgb(68, 69, 71)"));
+        importFile.setPadding(new Insets(2,10,2,10));
+        importFile.setStyle("-fx-background-color: rgb(68, 69, 71)");
+        importFile.setGraphic(loadFileView);
+        importFile.setOnAction(e -> displayHeaders(primaryStage));
+
+        Image saveFile = new Image("picture/save1.png");
+
+        ImageView saveFileView = new ImageView(saveFile);
+        saveFileView.setFitWidth(22);
+        saveFileView.setFitHeight(22);
+        saveData = new Button();
+        saveData.setOnMouseEntered(e -> saveData.setStyle("-fx-background-color: rgb(99, 99, 99)"));
+        saveData.setOnMouseExited(e -> saveData.setStyle("-fx-background-color: rgb(68, 69, 71)"));
+        saveData.setPrefHeight(24);
+        saveData.setPadding(new Insets(2,10,0,10));
+        saveData.setStyle("-fx-background-color: rgb(68, 69, 71)");
+        saveData.setGraphic(saveFileView);
+
+
+        HBox subMenu = addSubMenuBar();
+        //subMenu.setSpacing(10);
+        //subMenu.setPrefHeight(25);
+        //subMenu.setStyle("-fx-background-color: rgb(94, 96, 99)");
+        subMenu.getChildren().addAll(importFile,saveData);
+
 
 
         //Menu items for file tab
@@ -102,6 +144,7 @@ public class Main extends Application{
 
         //Testing log messages
         //help.setOnAction(e -> logFile.printLog());
+        help.setOnAction(e -> System.out.println(tabPane.getSelectionModel().getSelectedItem().getId()));
 
 
         //Setting tab pane to top
@@ -117,38 +160,31 @@ public class Main extends Application{
 
         menuBar.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
-        Image logo = new Image("picture/logo.png");
+        Image logo = new Image("picture/logo2.png");
         ImageView logoView = new ImageView(logo);
 
         logoView.setX(0);
         logoView.setY(0);
-        logoView.setFitHeight(70);
-        logoView.setFitWidth(100);
-
+        logoView.setFitHeight(60);
+        logoView.setFitWidth(68);
 
         VBox header = headerArea();
-        header.setStyle("-fx-background-color: rgb(83, 93, 93)");
-        header.getChildren().addAll(logoView,menuBar);
-
-
+        header.setStyle("-fx-background-color: rgb(123, 129, 137)");
+        header.getChildren().addAll(logoView,menuBar,subMenu);
 
         //setting nodes to border pane
         borderPane.setTop(header);
         borderPane.setCenter(tabPane);
         //borderPane.getStylesheets().add("styleSheet.css");
 
-
-
         //creating new scene
         Scene scene = new Scene(borderPane, 1400, 750);
         //scene.getStylesheets().add("styleSheet.css");
-
 
         primaryStage.setScene(scene);
         //window cannot be resized
         primaryStage.setResizable(false);
         primaryStage.show();
-
 
     }
 
@@ -175,11 +211,7 @@ public class Main extends Application{
 
         //System.out.println(dataFile.getName());
         //System.out.println(dataFile.getPath());
-
-
     }
-
-
 
     /**
      * To add the choiceBox to a VBox to be displayed in the BorderPane
@@ -190,18 +222,17 @@ public class Main extends Application{
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(8);
         vbox.setPrefWidth(200);
-        vbox.setStyle("-fx-background-color: rgb(119, 214, 211)");
+        //vbox.setStyle("-fx-background-color: rgb(119, 214, 211)");
 
         Text title = new Text("Data columns");
 
         vbox.getChildren().add(title);
 
-
         return vbox;
-
     }
 
     public VBox headerArea(){
+
         VBox vBox = new VBox();
 
         return vBox;
@@ -213,6 +244,18 @@ public class Main extends Application{
      */
     public HBox addHBox(){
         HBox hBox = new HBox();
+
+        return hBox;
+    }
+
+    public HBox addSubMenuBar(){
+        HBox hBox = new HBox();
+        VBox space = new VBox();
+        space.setPrefWidth(10);
+        hBox.getChildren().add(space);
+        hBox.setSpacing(5);
+        hBox.setPrefHeight(25);
+        hBox.setStyle("-fx-background-color: rgb(68, 69, 71)");
 
         return hBox;
     }
@@ -249,7 +292,7 @@ public class Main extends Application{
 
                 //VBox that will contain the choice for the columns to be displayed
                 VBox columnChoice = addVBox();
-                //columnChoice.setStyle("-fx-background-color: rgb(51, 135, 178)");
+                columnChoice.setStyle("-fx-background-color: rgb(224, 224, 224)");
 
 
                 path = file.getPath();
@@ -300,9 +343,9 @@ public class Main extends Application{
 
                     //Displays button 1
                     //Adding it to the columnChoice VBox
-                    button1 = new Button("Display table");
-                    columnChoice.getChildren().add(button1);
-                    //columnChoice.maxHeight(200);
+                    displayTable = new Button("Display table");
+                    displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
+                    columnChoice.getChildren().add(displayTable);
 
                     //Make pane scrollable
                     scrollPane = new ScrollPane();
@@ -312,42 +355,59 @@ public class Main extends Application{
                     //adding vbox scrollpane to hbox
                     tabContent.getChildren().add(scrollPane);
 
+                    HBox grids = grids();
+
+                    //Set action event for when button1id pressed
+                    displayTable.setOnAction(event1 -> {
+
+                        displayTableFunction(tabContent, grids);
+
+
+                        //for(DataFile f: files){
+                            //System.out.println(f.getName());
+
+                        //}
+
+
+                    });
+
+                    //for(GridPane g: grids){
+                        //tabContent.getChildren().add(g);
+                    //}
+
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
+
+
 
 
                     //adding tab to tabPanes
                     tabPane.getTabs().add(tab);
                     
 
-                    //Set action event for when button1id pressed
-                    button1.setOnAction(event1 -> {
 
-                        button1Function();
-
-                        for(DataFile f: files){
-                            //System.out.println(f.getName());
-                        }
-
-
-                    });
 
                     //Adding all files to files arraylist
                     files.add(file);
 
                     //Remove a DataFile from the files array once its tab has been closed
-                    for(Tab t: tabPane.getTabs()) {
-                        t.setOnClosed(e -> {
-                            for (DataFile f : files) {
-                                if (f.getName().equals(t.getId())) {
-                                    files.remove(f);
-                                } else {
+                        for (Tab t : tabPane.getTabs()) {
+                            t.setOnClosed(e -> {
+                                try {
+                                    for (DataFile f : files) {
+                                        if (f.getName().equals(t.getId())) {
+                                            files.remove(f);
+                                        } else {
+
+                                        }
+                                    }
+                                }catch(Exception e1){
 
                                 }
-                            }
 
-                        });
-                    }
+                            });
+                        }
+
 
 
                     //remove file fro the arraylist once it has been opened
@@ -378,7 +438,11 @@ public class Main extends Application{
     /**
      * Function that are associated with button1 when it is pressed
      */
-    public void button1Function(){
+    public void displayTableFunction(HBox tabcontent, HBox hGrid){
+
+        //HBox grids = grids();
+
+        hGrid.getChildren().clear();
 
         ArrayList<String> colsToDisplay = new ArrayList<>();
 
@@ -387,17 +451,24 @@ public class Main extends Application{
         //Get the ID of the currently viewed tab
         tabID = tabPane.getSelectionModel().getSelectedItem().getId();
 
-        for(DataFile f: files){
-            if(tabID.equals(f.getName())){
-                for(CheckBox c: f.getCheckBoxHeaders()){
-                    if(c.isSelected()){
-                        colsToDisplay.add(c.getId());
+        //Getting all the checkboxes that are selected
+        //and adding those that are selected in an arraylist
+        try {
+            for (DataFile f : files) {
+                if (tabID.equals(f.getName())) {
+                    for (CheckBox c : f.getCheckBoxHeaders()) {
+                        if (c.isSelected()) {
+                            colsToDisplay.add(c.getId());
 
+                        }
                     }
                 }
             }
+        }catch(Exception e){
+
         }
 
+        //Testing
         for(String s:colsToDisplay){
             System.out.println(s);
         }
@@ -482,6 +553,81 @@ public class Main extends Application{
                 }
             }
 
+
+
+
+
+            //ArrayList<GridPane> remove = new ArrayList<>();
+
+            //for(GridPane g: remove){
+                //grids.getChildren().remove(g);
+            //}
+
+
+
+            for(DataFile f:files){
+
+                if(f.getName().equals(tabID)){
+                    //grids = new ArrayList<>();
+
+                    //tabcontent.getChildren().remove(grids);
+                    hGrid.getChildren().clear();
+
+                    for(String s: colsToDisplay){
+
+                        dataPane = new GridPane();
+
+                        for(ColumnData c: f.getColData()){
+
+                            if(c.getName().equals(s)){
+
+                                scrollData = new ScrollPane();
+
+                                VBox dataColumn = dataCol();
+
+                                VBox header = new VBox();
+                                header.setPrefWidth(150);
+                                header.setPrefHeight(25);
+                                Text colName = new Text(c.getName());
+
+
+                                colName.setFont(Font.font("arial",FontWeight.BOLD, FontPosture.REGULAR, 16));
+                                header.getChildren().add(colName);
+                                header.setAlignment(Pos.CENTER);
+
+                                dataPane.add(header,0,0);
+
+                                //System.out.println(c.getName());
+
+                                for(String st:c.getData()){
+
+                                    //System.out.println(st);
+
+                                    Text dataRow = new Text(st);
+
+                                    dataColumn.getChildren().add(dataRow);
+
+
+                                }
+
+                                scrollData.setContent(dataColumn);
+
+                            }
+                        }
+                        dataPane.add(scrollData, 0 ,1);
+
+                        //tabcontent.getChildren().add(dataPane);
+                        //grids.add(dataPane);
+                        hGrid.getChildren().add(dataPane);
+
+                    }
+
+                    tabcontent.getChildren().add(hGrid);
+
+                }
+            }
+
+
                                         /*for (DataFile f1 : currentFile) {
 
                                             for (ColumnData c : f1.getColData()) {
@@ -508,6 +654,24 @@ public class Main extends Application{
     // System.out.println(s);
     //}
     //}
+
+    }
+
+    public VBox dataCol(){
+
+        VBox vbox = new VBox();
+        vbox.setPrefWidth(150);
+        vbox.setPrefHeight(450);
+        vbox.setAlignment(Pos.CENTER_LEFT);
+
+        return vbox;
+    }
+
+    public HBox grids(){
+
+        HBox hbox = new HBox();
+
+        return hbox;
     }
 
 

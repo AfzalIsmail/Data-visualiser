@@ -37,7 +37,7 @@ public class Main extends Application{
 
     ArrayList<ColumnData> cData;
 
-    String[][] data;
+    Object[][] data;
 
     TabPane tabPane;
 
@@ -222,11 +222,12 @@ public class Main extends Application{
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(8);
         vbox.setPrefWidth(200);
+        vbox.setMaxHeight(300);
         //vbox.setStyle("-fx-background-color: rgb(119, 214, 211)");
 
-        Text title = new Text("Data columns");
+        //Text title = new Text("Data columns");
 
-        vbox.getChildren().add(title);
+        //vbox.getChildren().add(title);
 
         return vbox;
     }
@@ -266,6 +267,7 @@ public class Main extends Application{
      */
     public ScrollPane addScrollPane(){
         ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setPrefViewportWidth(1200);
 
         return scrollPane;
     }
@@ -295,6 +297,7 @@ public class Main extends Application{
                 columnChoice.setStyle("-fx-background-color: rgb(224, 224, 224)");
 
 
+
                 path = file.getPath();
 
                 //Creating a new tab for each file uploaded
@@ -313,6 +316,17 @@ public class Main extends Application{
 
                 //sets the column number found in the csv file
                 file.setColNum(columnNames.length);
+
+                Text filePath = new Text("File path: " + path);
+                filePath.setStyle("-fx-fill: rgb(79, 86, 84)");
+                columnChoice.getChildren().add(filePath);
+
+                Text colNum = new Text("Number of columns: " + file.getColNum());
+                colNum.setStyle("-fx-fill: rgb(79, 86, 84)");
+                columnChoice.getChildren().add(colNum);
+
+                Text title = new Text("Data columns:");
+                columnChoice.getChildren().add(title);
 
 
 
@@ -350,17 +364,23 @@ public class Main extends Application{
                     //Make pane scrollable
                     scrollPane = new ScrollPane();
                     scrollPane.setContent(columnChoice);
+
                     
 
                     //adding vbox scrollpane to hbox
                     tabContent.getChildren().add(scrollPane);
 
+
+                    //Area where the data tables will appear
                     HBox grids = grids();
+
+
+                    ScrollPane scrollGrids = addScrollPane();
 
                     //Set action event for when button1id pressed
                     displayTable.setOnAction(event1 -> {
 
-                        displayTableFunction(tabContent, grids);
+                        displayTableFunction(tabContent, grids, scrollGrids);
 
 
                         //for(DataFile f: files){
@@ -438,7 +458,7 @@ public class Main extends Application{
     /**
      * Function that are associated with button1 when it is pressed
      */
-    public void displayTableFunction(HBox tabcontent, HBox hGrid){
+    public void displayTableFunction(HBox tabcontent, HBox hGrid, ScrollPane scrollHGrid){
 
         //HBox grids = grids();
 
@@ -470,7 +490,7 @@ public class Main extends Application{
 
         //Testing
         for(String s:colsToDisplay){
-            System.out.println(s);
+            //System.out.println(s);
         }
 
         //temp.setName(tabID);
@@ -483,9 +503,9 @@ public class Main extends Application{
             if(tabID.equals(f.getName())){
                 //temp.setcNames(f.getcNames());
                 temp = f.getcNames();
-                System.out.println(tabID);
+                //System.out.println(tabID);
                 tabPath = f.getPath();
-                System.out.println(tabPath);
+                //System.out.println(tabPath);
             }else{
 
             }
@@ -501,7 +521,7 @@ public class Main extends Application{
             int numCol = data[0].length;
             int numRow = data.length;
 
-            ArrayList<String> a;
+            ArrayList<Object> a;
             ColumnData columnData;
             cData = new ArrayList<>();
 
@@ -518,7 +538,7 @@ public class Main extends Application{
 
                 for (int j = 0; j < numRow; j = j + 1) {
 
-                    String s = data[j][i];
+                    Object s = data[j][i];
 
                     a.add(s);
 
@@ -546,7 +566,7 @@ public class Main extends Application{
                 if(f.getName().equals(tabID)) {
                     for (ColumnData c : f.getColData()) {
                         //System.out.println(c.getName());
-                        for (String s : c.getData()) {
+                        for (Object o : c.getData()) {
                             //System.out.println(s);
                         }
                     }
@@ -571,7 +591,7 @@ public class Main extends Application{
                     //grids = new ArrayList<>();
 
                     //tabcontent.getChildren().remove(grids);
-                    hGrid.getChildren().clear();
+                    //hGrid.getChildren().clear();
 
                     for(String s: colsToDisplay){
 
@@ -586,7 +606,7 @@ public class Main extends Application{
                                 VBox dataColumn = dataCol();
 
                                 VBox header = new VBox();
-                                header.setPrefWidth(150);
+                                header.setPrefWidth(180);
                                 header.setPrefHeight(25);
                                 Text colName = new Text(c.getName());
 
@@ -597,13 +617,43 @@ public class Main extends Application{
 
                                 dataPane.add(header,0,0);
 
+                                String check = checkVariable.checkVar(c.getData());
+
+                                System.out.println(check);
+
+                                if(check.equals("String")) {
+                                    ArrayList<Object> distinct = Distinct.getDistinct(c.getData());
+                                    System.out.println("Length of data : " + c.getData().size());
+                                    System.out.println("Final distinct elements : " + distinct);
+                                    System.out.println("No of elements : " + distinct.size());
+
+                                    Text distinctText = new Text("Data type: " + check + "\n" +
+                                                                "Length of data: " + c.getData().size() + "\n" +
+                                                                "Final distinct elements: " + distinct + "\n" +
+                                                                "No of elements: " + distinct.size());
+
+
+                                    VBox distinctVbox = new VBox();
+                                    distinctVbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
+                                    distinctVbox.setPrefWidth(180);
+                                    distinctVbox.setPrefHeight(170);
+                                    distinctVbox.getChildren().add(distinctText);
+
+                                    ScrollPane distinctScroll = new ScrollPane();
+                                    distinctScroll.setContent(distinctVbox);
+
+                                    dataPane.add(distinctScroll,0,3);
+                                }else{
+
+                                }
+
                                 //System.out.println(c.getName());
 
-                                for(String st:c.getData()){
+                                for(Object o:c.getData()){
 
                                     //System.out.println(st);
 
-                                    Text dataRow = new Text(st);
+                                    Text dataRow = new Text(o.toString());
 
                                     dataColumn.getChildren().add(dataRow);
 
@@ -619,10 +669,11 @@ public class Main extends Application{
                         //tabcontent.getChildren().add(dataPane);
                         //grids.add(dataPane);
                         hGrid.getChildren().add(dataPane);
+                        scrollHGrid.setContent(hGrid);
 
                     }
 
-                    tabcontent.getChildren().add(hGrid);
+                    tabcontent.getChildren().add(scrollHGrid);
 
                 }
             }
@@ -660,8 +711,8 @@ public class Main extends Application{
     public VBox dataCol(){
 
         VBox vbox = new VBox();
-        vbox.setPrefWidth(150);
-        vbox.setPrefHeight(450);
+        vbox.setPrefWidth(180);
+        vbox.setPrefHeight(400);
         vbox.setAlignment(Pos.CENTER_LEFT);
 
         return vbox;
@@ -670,6 +721,7 @@ public class Main extends Application{
     public HBox grids(){
 
         HBox hbox = new HBox();
+        //hbox.setPrefWidth(1100);
 
         return hbox;
     }

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class ColumnData {
     private String name;
 
-    private ArrayList<String> data;
+    private ArrayList<Object> data;
 
     public ColumnData(){
 
@@ -20,11 +20,11 @@ public class ColumnData {
         this.name = name;
     }
 
-    public ArrayList<String> getData() {
+    public ArrayList<Object> getData() {
         return data;
     }
 
-    public void setData(ArrayList<String> data) {
+    public void setData(ArrayList<Object> data) {
         this.data = data;
     }
 

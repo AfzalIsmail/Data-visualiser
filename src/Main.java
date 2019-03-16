@@ -1,8 +1,10 @@
+import com.sun.tools.javac.file.SymbolArchive;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,8 +19,11 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
-
+/**
+ *
+ */
 public class Main extends Application{
 
     BorderPane borderPane;
@@ -47,37 +52,36 @@ public class Main extends Application{
 
     String[] columnNames = null;
 
-    TableView tableView;
-
     CheckBox columnHeaders;
 
-    ScrollBar scrollBar;
-
     ScrollPane scrollPane;
-
-    DataFile dataFile;
 
     String tabID,tabPath;
 
     ArrayList<CheckBox> checkBoxes;
-
-    //ArrayList<GridPane> grids;
 
     GridPane dataPane;
 
     ScrollPane scrollData;
 
 
-
+    /**
+     *
+     * @param args
+     */
     public static void main ( String[] args){
 
         launch(args);
     }
 
+    /**
+     *
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
 
-        primaryStage.setTitle("Data Visualizer");
+        primaryStage.setTitle("DVision");
 
         currentFile = new ArrayList<>();
         files = new ArrayList<>();
@@ -116,14 +120,8 @@ public class Main extends Application{
         saveData.setStyle("-fx-background-color: rgb(68, 69, 71)");
         saveData.setGraphic(saveFileView);
 
-
         HBox subMenu = addSubMenuBar();
-        //subMenu.setSpacing(10);
-        //subMenu.setPrefHeight(25);
-        //subMenu.setStyle("-fx-background-color: rgb(94, 96, 99)");
         subMenu.getChildren().addAll(importFile,saveData);
-
-
 
         //Menu items for file tab
         browseFile = new MenuItem("Browse File");
@@ -181,7 +179,9 @@ public class Main extends Application{
         Scene scene = new Scene(borderPane, 1400, 750);
         //scene.getStylesheets().add("styleSheet.css");
 
+        primaryStage.getIcons().add(logo);
         primaryStage.setScene(scene);
+
         //window cannot be resized
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -232,6 +232,10 @@ public class Main extends Application{
         return vbox;
     }
 
+    /**
+     *
+     * @return
+     */
     public VBox headerArea(){
 
         VBox vBox = new VBox();
@@ -249,6 +253,10 @@ public class Main extends Application{
         return hBox;
     }
 
+    /**
+     *
+     * @return
+     */
     public HBox addSubMenuBar(){
         HBox hBox = new HBox();
         VBox space = new VBox();
@@ -383,29 +391,14 @@ public class Main extends Application{
                         displayTableFunction(tabContent, grids, scrollGrids);
 
 
-                        //for(DataFile f: files){
-                            //System.out.println(f.getName());
-
-                        //}
-
-
                     });
-
-                    //for(GridPane g: grids){
-                        //tabContent.getChildren().add(g);
-                    //}
 
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
 
 
-
-
                     //adding tab to tabPanes
                     tabPane.getTabs().add(tab);
-                    
-
-
 
                     //Adding all files to files arraylist
                     files.add(file);
@@ -449,10 +442,7 @@ public class Main extends Application{
 
         }
 
-            /*for(DataFile file: files){
-               System.out.println(file.getName());
-                System.out.println(file.getPath());
-            }*/
+
     }
 
     /**
@@ -540,7 +530,13 @@ public class Main extends Application{
 
                     Object s = data[j][i];
 
-                    a.add(s);
+                    if(s == null || s.toString().equals(null) || s.toString().length() == 0){
+
+                        a.add(" ");
+
+                    }else{
+                        a.add(s);
+                    }
 
                 //System.out.println(s);
 
@@ -572,18 +568,6 @@ public class Main extends Application{
                     }
                 }
             }
-
-
-
-
-
-            //ArrayList<GridPane> remove = new ArrayList<>();
-
-            //for(GridPane g: remove){
-                //grids.getChildren().remove(g);
-            //}
-
-
 
             for(DataFile f:files){
 
@@ -621,29 +605,61 @@ public class Main extends Application{
 
                                 System.out.println(check);
 
-                                if(check.equals("String")) {
-                                    ArrayList<Object> distinct = Distinct.getDistinct(c.getData());
-                                    System.out.println("Length of data : " + c.getData().size());
-                                    System.out.println("Final distinct elements : " + distinct);
-                                    System.out.println("No of elements : " + distinct.size());
+                                if(check.equals("String") || check.equals("Char")) {
+                                    Map distinct = Distinct.getDistinct(c.getData());
+                                    //System.out.println("Length of data : " + c.getData().size());
+                                    //System.out.println("Final distinct elements : " + distinct);
+                                    //System.out.println("No of elements : " + distinct.size());
 
-                                    Text distinctText = new Text("Data type: " + check + "\n" +
-                                                                "Length of data: " + c.getData().size() + "\n" +
-                                                                "Final distinct elements: " + distinct + "\n" +
-                                                                "No of elements: " + distinct.size());
+                                    int missVal = MissingValues.missingData(c.getData());
+
+                                    Text distinctText;
+
+                                    if(distinct.size() <= 20) {
+
+                                         distinctText = new Text("Data type: " + check + "\n" +
+                                                "Length of data: " + c.getData().size() + "\n" +
+                                                "Final distinct elements: " + distinct + "\n" +
+                                                "No of elements: " + distinct.size() + "\n" +
+                                                "No of missing values: " + missVal);
+                                    }else{
+                                        distinctText = new Text("Data type: " + check + "\n" +
+                                                "Length of data: " + c.getData().size() + "\n" +
+                                                "No of missing values: " + missVal + "\n" +
+                                                "Number of distinct " + "\n" +"elements exceed 20!");
+
+                                    }
+
+                                    displayStats(distinctText,dataPane);
 
 
-                                    VBox distinctVbox = new VBox();
-                                    distinctVbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
-                                    distinctVbox.setPrefWidth(180);
-                                    distinctVbox.setPrefHeight(170);
-                                    distinctVbox.getChildren().add(distinctText);
+                                }else if(check.equals("Integer") || check.equals("Double")){
 
-                                    ScrollPane distinctScroll = new ScrollPane();
-                                    distinctScroll.setContent(distinctVbox);
+                                    int missVal = MissingValues.missingData(c.getData());
 
-                                    dataPane.add(distinctScroll,0,3);
-                                }else{
+
+                                    double sum = Statistics.getSum(c.getData());
+                                    double mean = Statistics.getMean(c.getData(), sum);
+                                    double variance = Statistics.getVariance((c.getData()), mean);
+                                    double stDeviation = Statistics.getStDeviation(variance);
+
+                                    //System.out.println(sum);
+                                    //System.out.println(mean);
+                                    System.out.println(variance);
+                                    System.out.println(stDeviation);
+
+                                    Text doubleText = new Text("Data type: " + check + "\n" +
+                                            "Length of data: " + c.getData().size() + "\n" +
+                                            "Sum of data: " + sum + "\n" +
+                                            "Mean: " + mean + "\n" +
+                                            "Variance: " + variance + "\n" +
+                                            "Std. dev: " + stDeviation + "\n" +
+                                            "Missing values: " + missVal);
+
+                                    doubleText.setFont(Font.font("Source sans pro", 13));
+
+
+                                    displayStats(doubleText,dataPane);
 
                                 }
 
@@ -653,7 +669,10 @@ public class Main extends Application{
 
                                     //System.out.println(st);
 
-                                    Text dataRow = new Text(o.toString());
+                                    Text dataRow = null;
+
+                                        dataRow = new Text(o.toString());
+
 
                                     dataColumn.getChildren().add(dataRow);
 
@@ -678,36 +697,16 @@ public class Main extends Application{
                 }
             }
 
-
-                                        /*for (DataFile f1 : currentFile) {
-
-                                            for (ColumnData c : f1.getColData()) {
-
-                                                for (String s : c.getData()) {
-
-                                                    //System.out.println(s);
-                                                }
-                                            }
-                                        }*/
-
-
         } catch (Exception e1) {
 
         }
 
-
-    //DataFile f1 = files.get(0);
-
-    //for(ColumnData c : f.getColData()){
-
-    //for(String s: c.getData()){
-
-    // System.out.println(s);
-    //}
-    //}
-
     }
 
+    /**
+     *
+     * @return
+     */
     public VBox dataCol(){
 
         VBox vbox = new VBox();
@@ -718,6 +717,10 @@ public class Main extends Application{
         return vbox;
     }
 
+    /**
+     *
+     * @return
+     */
     public HBox grids(){
 
         HBox hbox = new HBox();
@@ -726,6 +729,25 @@ public class Main extends Application{
         return hbox;
     }
 
+    /**
+     *
+     * @param text
+     * @param grid
+     */
+    public void displayStats(Text text, GridPane grid){
+
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
+        vbox.setPrefWidth(180);
+        vbox.setPrefHeight(170);
+        vbox.getChildren().add(text);
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(vbox);
+
+        grid.add(scroll,0,3);
+
+    }
 
 
 }

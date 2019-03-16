@@ -1,13 +1,46 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Distinct {
 
-    public static ArrayList<Object> getDistinct (ArrayList<Object> data)
+    Object o;
+    int count;
+
+    public Distinct(){
+
+        o = null;
+        count = 0;
+
+    }
+
+    public Object getO() {
+        return o;
+    }
+
+    public void setO(Object o) {
+        this.o = o;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    /**
+     *
+     * @param data
+     * @return
+     */
+    public static Map<Object, Integer> getDistinct (ArrayList<Object> data)
     {
         ArrayList<Object> distinct = new ArrayList();
 
 
-        for (int i=0; i<data.size(); i++)
+        /*for (int i=0; i<data.size(); i++)
         {
             if (i==0)
             {
@@ -31,6 +64,7 @@ public class Distinct {
                         counter++;
                         break;
                     }
+
                 }
 
                 if (counter == 0) //if there is no same element in the arraylist, the current element is added.
@@ -39,10 +73,20 @@ public class Distinct {
                 }
             }
 
+        }*/
+
+        Map <Object, Integer> counter = new HashMap<>();
+
+        for(Object a: data){
+            if(counter.containsKey(a)){
+                counter.put(a, counter.get(a)+1);
+            }else{
+                counter.put(a,1);
+            }
         }
         //System.out.println("Final distinct elements : "+distinct);
         //System.out.println("No of elements : "+distinct.size());
-        return distinct;
+        return counter;
 
     }
 

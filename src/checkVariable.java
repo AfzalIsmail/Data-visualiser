@@ -8,35 +8,59 @@ public class checkVariable {
 
         int i = 0;
 
+        int cInt = 0, cDouble = 0, cChar = 0, cString = 0, cBoolean = 0;
 
-        if (canConvertInt(dataObject.get(0))) {
+    for(i = 0; i <5; i++) {
 
-            varType = "Integer";
+        if (canConvertInt(dataObject.get(i)) && !dataObject.get(i).toString().equals("") ) {
 
-        } else if (canConvertDouble(dataObject.get(0))) {
+            cInt++;
 
-            varType = "Double";
 
-        } else if (canConvertChar(dataObject.get(0))) {
+        } else if (canConvertDouble(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
 
-            varType = "Char";
+            cDouble++;
 
-        } else if (canConvertString(dataObject.get(0)) && dataObject.get(0).equals(null)) {
+        } else if (canConvertChar(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
 
-            varType = "String";
+            cChar++;
 
-        } else if (canConvertBoolean(dataObject.get(0))) {
+        } else if (canConvertString(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
 
-            varType = "Boolean";
+            cString++;
+
+        } else if (canConvertBoolean(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
+
+            cBoolean++;
 
         } else {
 
-            varType = "Not recognised";
+        }
+    }
 
+        if(cInt >= 1) {
+            varType = "Integer";
+
+        }else if(cDouble >= 1) {
+            varType = "Double";
+
+        }else if(cChar >=1) {
+            varType = "Char";
+
+        }else if(cString >= 1) {
+            varType = "String";
+
+        }else if(cBoolean >= 1) {
+            varType = "Boolean";
+
+        }else {
+            varType = "Not recognised";
         }
 
+    //System.out.println(cInt);
         return varType;
     }
+
 
     public static boolean canConvertInt (Object data)
     {

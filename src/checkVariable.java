@@ -12,24 +12,24 @@ public class checkVariable {
 
     for(i = 0; i <5; i++) {
 
-        if (canConvertInt(dataObject.get(i)) && !dataObject.get(i).toString().equals("") ) {
+        if (canConvertInt(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ") ) {
 
             cInt++;
 
 
-        } else if (canConvertDouble(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
+        } else if (canConvertDouble(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
 
             cDouble++;
 
-        } else if (canConvertChar(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
+        } else if (canConvertChar(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
 
             cChar++;
 
-        } else if (canConvertString(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
+        } else if (canConvertString(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
 
             cString++;
 
-        } else if (canConvertBoolean(dataObject.get(i)) && !dataObject.get(i).toString().equals("")) {
+        } else if (canConvertBoolean(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
 
             cBoolean++;
 
@@ -47,10 +47,13 @@ public class checkVariable {
         }else if(cChar >=1) {
             varType = "Char";
 
-        }else if(cString >= 1) {
+        }
+        else if(cString >= 1) {
             varType = "String";
+            System.out.println(cString);
 
-        }else if(cBoolean >= 1) {
+        }
+        else if(cBoolean >= 1) {
             varType = "Boolean";
 
         }else {

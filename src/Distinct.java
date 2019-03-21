@@ -37,7 +37,7 @@ public class Distinct {
      */
     public static Map<Object, Integer> getDistinct (ArrayList<Object> data)
     {
-        ArrayList<Object> distinct = new ArrayList();
+        //ArrayList<Object> distinct = new ArrayList();
 
 
         /*for (int i=0; i<data.size(); i++)

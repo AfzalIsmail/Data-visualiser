@@ -6,7 +6,6 @@ public class ReadCSV {
 
     public static Object[][] readFile (String filepath) throws Exception
     {
-        //String filepath = "Data.csv";
 
         FileReader fr = new FileReader (filepath);
         BufferedReader br = new BufferedReader (fr);

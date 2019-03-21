@@ -18,6 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class Main extends Application{
 
     MenuItem browseFile, save, exit,manual;
 
-    Button displayTable, importFile, saveData;
+    Button displayTable, importFile, saveData, correlation;
 
     ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
@@ -94,25 +95,33 @@ public class Main extends Application{
         file = new Menu("File");
         help = new Menu("Help");
 
+        //Load file image
         Image loadFile = new Image("picture/load.png");
 
+        //Load file button which appears on the submenu
+        //and all the events and styling associated to this button
         ImageView loadFileView = new ImageView(loadFile);
         loadFileView.setFitHeight(20);
         loadFileView.setFitWidth(20);
         importFile = new Button();
+        Tooltip importButton = new Tooltip("Import a new file");
+        importFile.setTooltip(importButton);
         importFile.setOnMouseEntered(e -> importFile.setStyle("-fx-background-color: rgb(99, 99, 99)"));
         importFile.setOnMouseExited(e -> importFile.setStyle("-fx-background-color: rgb(68, 69, 71)"));
         importFile.setPadding(new Insets(2,10,2,10));
         importFile.setStyle("-fx-background-color: rgb(68, 69, 71)");
         importFile.setGraphic(loadFileView);
-        importFile.setOnAction(e -> displayHeaders(primaryStage));
 
+        //Save data image
         Image saveFile = new Image("picture/save1.png");
 
+        //Save button which appears in the submenu
         ImageView saveFileView = new ImageView(saveFile);
         saveFileView.setFitWidth(22);
         saveFileView.setFitHeight(22);
         saveData = new Button();
+        Tooltip saveButton = new Tooltip("Save data");
+        saveData.setTooltip(saveButton);
         saveData.setOnMouseEntered(e -> saveData.setStyle("-fx-background-color: rgb(99, 99, 99)"));
         saveData.setOnMouseExited(e -> saveData.setStyle("-fx-background-color: rgb(68, 69, 71)"));
         saveData.setPrefHeight(24);
@@ -120,6 +129,7 @@ public class Main extends Application{
         saveData.setStyle("-fx-background-color: rgb(68, 69, 71)");
         saveData.setGraphic(saveFileView);
 
+        //HBox containing the load and save file buttons
         HBox subMenu = addSubMenuBar();
         subMenu.getChildren().addAll(importFile,saveData);
 
@@ -136,13 +146,33 @@ public class Main extends Application{
 
         //opens the file browser and saves each file selected in an arraylist
         browseFile.setOnAction(e -> {
-            displayHeaders(primaryStage);
 
+            System.out.println("Browse file menu item pressed.");
+
+            if(files.size() <= 20) {
+                displayHeaders(primaryStage);
+            }else{
+                alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
+                System.out.println("File limit of 20 reached.");
+            }
+
+        });
+
+        importFile.setOnAction(e -> {
+
+            System.out.println("Import file icon pressed.");
+
+            if(files.size() <= 20) {
+                displayHeaders(primaryStage);
+            }else{
+                alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
+                System.out.println("File limit of 20 reached.");
+            }
         });
 
         //Testing log messages
         //help.setOnAction(e -> logFile.printLog());
-        help.setOnAction(e -> System.out.println(tabPane.getSelectionModel().getSelectedItem().getId()));
+        //help.setOnAction(e -> System.out.println(tabPane.getSelectionModel().getSelectedItem().getId()));
 
 
         //Setting tab pane to top
@@ -155,9 +185,10 @@ public class Main extends Application{
 
         //assigning menu tabs to menu bar
         menuBar.getMenus().addAll(file,help);
-
+        //Color of menu bar
         menuBar.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
+        //Displaying the program logo on the top left corner
         Image logo = new Image("picture/logo2.png");
         ImageView logoView = new ImageView(logo);
 
@@ -166,6 +197,7 @@ public class Main extends Application{
         logoView.setFitHeight(60);
         logoView.setFitWidth(68);
 
+        //VBox that contains the logo, menu bar and submenu
         VBox header = headerArea();
         header.setStyle("-fx-background-color: rgb(123, 129, 137)");
         header.getChildren().addAll(logoView,menuBar,subMenu);
@@ -194,20 +226,27 @@ public class Main extends Application{
      */
     public void fileBrowser(Stage stage, ArrayList<DataFile> paths){
 
-        DataFile dataFile = new DataFile();
+        try {
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Browse a file");
-        fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("CSV Files","*.csv"));
-        File selectedFile = fileChooser.showOpenDialog(stage);
+            DataFile dataFile = new DataFile();
 
-        logFile.addToLog("File " + selectedFile.getName() + " is choosen");
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Browse a file");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+            File selectedFile = fileChooser.showOpenDialog(stage);
+
+            logFile.addToLog("File " + selectedFile.getName() + " is selected");
+            System.out.println("File " + selectedFile.getName() + " is selected");
 
 
-        dataFile.setName(selectedFile.getName());
-        dataFile.setPath(selectedFile.getPath());
+            dataFile.setName(selectedFile.getName());
+            dataFile.setPath(selectedFile.getPath());
 
-        paths.add(dataFile);
+            paths.add(dataFile);
+
+        }catch (Exception e){
+            System.out.println("No file chosen.");
+        }
 
         //System.out.println(dataFile.getName());
         //System.out.println(dataFile.getPath());
@@ -215,6 +254,7 @@ public class Main extends Application{
 
     /**
      * To add the choiceBox to a VBox to be displayed in the BorderPane
+     * the choiceBox consists of the headers of each column that the user can select to be displayed
      * @return vbox
      */
     public VBox addVBox(){
@@ -233,7 +273,7 @@ public class Main extends Application{
     }
 
     /**
-     *
+     *The Vbox for the header area that will contain the logo, menu and submenu
      * @return
      */
     public VBox headerArea(){
@@ -244,7 +284,7 @@ public class Main extends Application{
     }
 
     /**
-     * Creating HBoxes that can be added to other types of layouts
+     * Creating HBoxes that can will place all the other layouts in the tabs horizontally
      * @return hBox
      */
     public HBox addHBox(){
@@ -254,7 +294,7 @@ public class Main extends Application{
     }
 
     /**
-     *
+     * HBox the that contains the load file and save file button icons
      * @return
      */
     public HBox addSubMenuBar(){
@@ -289,6 +329,7 @@ public class Main extends Application{
 
         //Keeping log of when browseFile is pressed
         logFile.addToLog("File browser opened");
+        System.out.println("File browser opened");
 
         //calling the filebrowser function
         fileBrowser(stage, currentFile);
@@ -304,8 +345,7 @@ public class Main extends Application{
                 VBox columnChoice = addVBox();
                 columnChoice.setStyle("-fx-background-color: rgb(224, 224, 224)");
 
-
-
+                //Holds the string of the file path
                 path = file.getPath();
 
                 //Creating a new tab for each file uploaded
@@ -325,10 +365,13 @@ public class Main extends Application{
                 //sets the column number found in the csv file
                 file.setColNum(columnNames.length);
 
+                //Text to be displayed in the left panel once a file is imported
+                //Displays the path of the imported file
                 Text filePath = new Text("File path: " + path);
                 filePath.setStyle("-fx-fill: rgb(79, 86, 84)");
                 columnChoice.getChildren().add(filePath);
 
+                //Display the number of columns in that file
                 Text colNum = new Text("Number of columns: " + file.getColNum());
                 colNum.setStyle("-fx-fill: rgb(79, 86, 84)");
                 columnChoice.getChildren().add(colNum);
@@ -340,6 +383,9 @@ public class Main extends Application{
 
                 //checks that the number of columns in the data set does not exceed 60
                 if (columnNames.length <= 60) {
+
+                    System.out.println("Column headers displayed.");
+
                     colNames = new ArrayList<>();
                     checkBoxes = new ArrayList<>();
 
@@ -349,31 +395,40 @@ public class Main extends Application{
                         //creating checkboxes for each file header in the file
                         columnHeaders = new CheckBox(columnNames[i]);
 
-                        columnHeaders.setId(columnNames[i]);
+                        columnHeaders.setId(columnNames[i]);  //setting the column headers id to their respective names
 
-                        checkBoxes.add(columnHeaders);
+                        checkBoxes.add(columnHeaders);   //Adding the checkbox to the arraylist
 
-                        colNames.add(columnNames[i]);
+                        colNames.add(columnNames[i]);    //Adding the header names to the arraylist colNames
 
                         //Adding the checkboxes to the columnChoice VBox
                         columnChoice.getChildren().add(columnHeaders);
                     }
 
+                    //setting the arraylist of checkboxes to the file object
                     file.setCheckBoxHeaders(checkBoxes);
 
+                    //setting the arraylist of column names to the file object
                     file.setcNames(colNames);
 
                     //Displays button 1
                     //Adding it to the columnChoice VBox
                     displayTable = new Button("Display table");
+                    Tooltip disTable = new Tooltip("Click to display selected columns.");
+                    displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
                     columnChoice.getChildren().add(displayTable);
+
+                    //Correlation coefficient button
+                    correlation = new Button("Correlation coefficient");
+                    correlation.setId(tabID);
+                    Tooltip corrF = new Tooltip("Select and display the required columns first");
+                    correlation.setTooltip(corrF);
+                    columnChoice.getChildren().add(correlation);
 
                     //Make pane scrollable
                     scrollPane = new ScrollPane();
                     scrollPane.setContent(columnChoice);
-
-                    
 
                     //adding vbox scrollpane to hbox
                     tabContent.getChildren().add(scrollPane);
@@ -382,16 +437,26 @@ public class Main extends Application{
                     //Area where the data tables will appear
                     HBox grids = grids();
 
-
+                    //Making the area where the data columns are displayed scrollable
                     ScrollPane scrollGrids = addScrollPane();
 
-                    //Set action event for when button1id pressed
+                    //Set action event for when display table button is pressed
                     displayTable.setOnAction(event1 -> {
 
+                        System.out.println("Display table button pressed.");
+
+                        //calling displayTableFunction function
                         displayTableFunction(tabContent, grids, scrollGrids);
+                        //correlation.setDisable(false);
+                        //Tooltip coffT = new Tooltip("Select 2 columns to get the correlation coefficient.");
+                        //correlation.setTooltip(coffT);
 
 
                     });
+
+                    //correlation.setDisable(true);
+
+                    correlation.setOnAction(event2 -> correlationFunction());
 
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
@@ -409,6 +474,7 @@ public class Main extends Application{
                                 try {
                                     for (DataFile f : files) {
                                         if (f.getName().equals(t.getId())) {
+                                            System.out.println("File " + f.getName() + "is closed.");
                                             files.remove(f);
                                         } else {
 
@@ -416,6 +482,7 @@ public class Main extends Application{
                                     }
                                 }catch(Exception e1){
 
+                                    System.out.println("All tabs closed.");
                                 }
 
                             });
@@ -431,6 +498,7 @@ public class Main extends Application{
                     //display error if dataset contains more than 60 attributes
                     alertBox.display("Error", "The dataset contains more than 60 attributes");
                     logFile.addToLog("Error: The file contains more than 60 attributes");
+                    System.out.println("Error: The file chosen contains more than 60 attributes");
                     currentFile.remove(file);
 
                 }
@@ -442,28 +510,33 @@ public class Main extends Application{
 
         }
 
-
     }
 
     /**
-     * Function that are associated with button1 when it is pressed
+     * Function that will display the data columns and their respective statistics once the display table button is pressed
      */
     public void displayTableFunction(HBox tabcontent, HBox hGrid, ScrollPane scrollHGrid){
 
         //HBox grids = grids();
 
+        //Clearing the data column area every time the display column button is pressed
         hGrid.getChildren().clear();
 
+        //Arraylist that will contain the names of the columns selected by the user
         ArrayList<String> colsToDisplay = new ArrayList<>();
-
 
         //DataFile temp = new DataFile();
         //Get the ID of the currently viewed tab
-        tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+        try {
+            tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+            System.out.println("Tab " + tabID + "is being manipulated by user.");
+        }catch (Exception e){
+
+        }
 
         //Getting all the checkboxes that are selected
         //and adding those that are selected in an arraylist
-        try {
+        /*try {
             for (DataFile f : files) {
                 if (tabID.equals(f.getName())) {
                     for (CheckBox c : f.getCheckBoxHeaders()) {
@@ -476,7 +549,9 @@ public class Main extends Application{
             }
         }catch(Exception e){
 
-        }
+        }*/
+
+        selectedCheckbox(colsToDisplay,files,tabID);
 
         //Testing
         for(String s:colsToDisplay){
@@ -487,7 +562,7 @@ public class Main extends Application{
 
         //Search for the file with the same ID as the current tab in the files array list
         //And get the path for that file
-        ArrayList<String> temp = new ArrayList<>();
+        /*ArrayList<String> temp = new ArrayList<>();
 
         for(DataFile f: files){
             if(tabID.equals(f.getName())){
@@ -547,18 +622,23 @@ public class Main extends Application{
 
                 //file.getColData().add(columnData);
             }
+        } catch (Exception e1) {
+
+        }*/
+
+        readFile(files,tabID,path,data,cData);
 
 
             //Assigning arraylist of data to columnData
-            for(DataFile f: files){
+            /*for(DataFile f: files){
                 if(f.getName().equals(tabID)){
                     f.setColData(cData);
 
                 }
-            }
+            }*/
 
             //Testing
-            for(DataFile f: files){
+            /*for(DataFile f: files){
                 if(f.getName().equals(tabID)) {
                     for (ColumnData c : f.getColData()) {
                         //System.out.println(c.getName());
@@ -567,159 +647,317 @@ public class Main extends Application{
                         }
                     }
                 }
-            }
+            }*/
 
-            for(DataFile f:files){
+            try {
 
-                if(f.getName().equals(tabID)){
-                    //grids = new ArrayList<>();
+                for (DataFile f : files) {
 
-                    //tabcontent.getChildren().remove(grids);
-                    //hGrid.getChildren().clear();
+                    //Searches for the file that matches the tab ID
+                    if (f.getName().equals(tabID)) {
+                        //grids = new ArrayList<>();
 
-                    for(String s: colsToDisplay){
+                        //For all the columns selected by the user
+                        for (String s : colsToDisplay) {
 
-                        dataPane = new GridPane();
+                            System.out.println("Column selected: " + s);
 
-                        for(ColumnData c: f.getColData()){
+                            dataPane = new GridPane();    //creating a new gridpane for each column selected
 
-                            if(c.getName().equals(s)){
+                            //for all the columns in the data file
+                            for (ColumnData c : f.getColData()) {
 
-                                scrollData = new ScrollPane();
+                                //Check which column was selected by the user and display these tables
+                                if (c.getName().equals(s)) {
 
-                                VBox dataColumn = dataCol();
+                                    //Make the area containing the data columns scrollable
+                                    scrollData = new ScrollPane();
 
-                                VBox header = new VBox();
-                                header.setPrefWidth(180);
-                                header.setPrefHeight(25);
-                                Text colName = new Text(c.getName());
+                                    //vbox that will contain the data values
+                                    VBox dataColumn = dataCol();
 
+                                    //vbox that that will contain the column header
+                                    VBox header = new VBox();
+                                    header.setPrefWidth(180);
+                                    header.setPrefHeight(25);
+                                    Text colName = new Text(c.getName());
 
-                                colName.setFont(Font.font("arial",FontWeight.BOLD, FontPosture.REGULAR, 16));
-                                header.getChildren().add(colName);
-                                header.setAlignment(Pos.CENTER);
+                                    colName.setFont(Font.font("arial", FontWeight.BOLD, FontPosture.REGULAR, 16));
+                                    header.getChildren().add(colName);
+                                    header.setAlignment(Pos.CENTER);
 
-                                dataPane.add(header,0,0);
+                                    //adding the column header to the first top grid of the grid pane
+                                    dataPane.add(header, 0, 0);
 
-                                String check = checkVariable.checkVar(c.getData());
+                                    //check the data type of the values in this particular data column
+                                    String check = checkVariable.checkVar(c.getData());
 
-                                System.out.println(check);
+                                    //System.out.println(check);
 
-                                if(check.equals("String") || check.equals("Char")) {
-                                    Map distinct = Distinct.getDistinct(c.getData());
-                                    //System.out.println("Length of data : " + c.getData().size());
-                                    //System.out.println("Final distinct elements : " + distinct);
-                                    //System.out.println("No of elements : " + distinct.size());
+                                    //if the data column is a string or char type
+                                    //display length, distinct and frequency and missinf values
+                                    if (check.equals("String") || check.equals("Char")) {
+                                        Map distinct = Distinct.getDistinct(c.getData());
+                                        //System.out.println("Length of data : " + c.getData().size());
+                                        //System.out.println("Final distinct elements : " + distinct);
+                                        //System.out.println("No of elements : " + distinct.size());
 
-                                    int missVal = MissingValues.missingData(c.getData());
+                                        int missVal = MissingValues.missingData(c.getData());
 
-                                    Text distinctText;
+                                        Text distinctText;
 
-                                    if(distinct.size() <= 20) {
+                                        //check if the number of distinct values is not over 20
+                                        //otherwise it will not be displayed
+                                        if (distinct.size() <= 20) {
 
-                                         distinctText = new Text("Data type: " + check + "\n" +
+                                            distinctText = new Text("Data type: " + check + "\n" +
+                                                    "Length of data: " + c.getData().size() + "\n" +
+                                                    "Final distinct elements: " + distinct + "\n" +
+                                                    "No of elements: " + distinct.size() + "\n" +
+                                                    "No of missing values: " + missVal);
+                                        } else {
+                                            distinctText = new Text("Data type: " + check + "\n" +
+                                                    "Length of data: " + c.getData().size() + "\n" +
+                                                    "No of missing values: " + missVal + "\n" +
+                                                    "Number of distinct " + "\n" + "elements exceed 20!");
+
+                                        }
+
+                                        //adding the stats to be displayed in a vbox in the 3rd grid of the datapane
+                                        displayStats(distinctText, dataPane);
+
+                                        //display stats if data type id int or double
+                                    } else if (check.equals("Integer") || check.equals("Double")) {
+
+                                        //calling stats functions
+                                        int missVal = MissingValues.missingData(c.getData());
+                                        double sum = Statistics.getSum(c.getData());
+                                        double mean = Statistics.getMean(c.getData(), sum);
+                                        double variance = Statistics.getVariance((c.getData()), mean);
+                                        double stDeviation = Statistics.getStDeviation(variance);
+
+                                        DecimalFormat df = new DecimalFormat(".####");
+
+                                        //System.out.println(sum);
+                                        //System.out.println(mean);
+                                        //System.out.println(variance);
+                                        //System.out.println(stDeviation);
+
+                                        Text doubleText = new Text("Data type: " + check + "\n" +
                                                 "Length of data: " + c.getData().size() + "\n" +
-                                                "Final distinct elements: " + distinct + "\n" +
-                                                "No of elements: " + distinct.size() + "\n" +
-                                                "No of missing values: " + missVal);
-                                    }else{
-                                        distinctText = new Text("Data type: " + check + "\n" +
-                                                "Length of data: " + c.getData().size() + "\n" +
-                                                "No of missing values: " + missVal + "\n" +
-                                                "Number of distinct " + "\n" +"elements exceed 20!");
+                                                "Sum of data: " + df.format(sum) + "\n" +
+                                                "Mean: " + df.format(mean) + "\n" +
+                                                "Variance: " + df.format(variance) + "\n" +
+                                                "Std. dev: " + df.format(stDeviation) + "\n" +
+                                                "Missing values: " + missVal);
+
+                                        doubleText.setFont(Font.font("Source sans pro", 13));
+
+
+                                        displayStats(doubleText, dataPane);
 
                                     }
 
-                                    displayStats(distinctText,dataPane);
+                                    //System.out.println(c.getName());
 
+                                    //getting all the data values in the column and displaying them
+                                    for (Object o : c.getData()) {
 
-                                }else if(check.equals("Integer") || check.equals("Double")){
+                                        //System.out.println(st);
 
-                                    int missVal = MissingValues.missingData(c.getData());
-
-
-                                    double sum = Statistics.getSum(c.getData());
-                                    double mean = Statistics.getMean(c.getData(), sum);
-                                    double variance = Statistics.getVariance((c.getData()), mean);
-                                    double stDeviation = Statistics.getStDeviation(variance);
-
-                                    //System.out.println(sum);
-                                    //System.out.println(mean);
-                                    System.out.println(variance);
-                                    System.out.println(stDeviation);
-
-                                    Text doubleText = new Text("Data type: " + check + "\n" +
-                                            "Length of data: " + c.getData().size() + "\n" +
-                                            "Sum of data: " + sum + "\n" +
-                                            "Mean: " + mean + "\n" +
-                                            "Variance: " + variance + "\n" +
-                                            "Std. dev: " + stDeviation + "\n" +
-                                            "Missing values: " + missVal);
-
-                                    doubleText.setFont(Font.font("Source sans pro", 13));
-
-
-                                    displayStats(doubleText,dataPane);
-
-                                }
-
-                                //System.out.println(c.getName());
-
-                                for(Object o:c.getData()){
-
-                                    //System.out.println(st);
-
-                                    Text dataRow = null;
+                                        Text dataRow = null;
 
                                         dataRow = new Text(o.toString());
 
+                                        //adding each data value to the vbox dataColumn
+                                        dataColumn.getChildren().add(dataRow);
 
-                                    dataColumn.getChildren().add(dataRow);
-
+                                    }
+                                    //adding the vbox dataColumn to scrollData to make it scrollable
+                                    scrollData.setContent(dataColumn);
 
                                 }
-
-                                scrollData.setContent(dataColumn);
-
                             }
-                        }
-                        dataPane.add(scrollData, 0 ,1);
+                            //adding the data values to the 2nd grid poeition in the gridpane
+                            dataPane.add(scrollData, 0, 1);
 
-                        //tabcontent.getChildren().add(dataPane);
-                        //grids.add(dataPane);
-                        hGrid.getChildren().add(dataPane);
-                        scrollHGrid.setContent(hGrid);
+                            //tabcontent.getChildren().add(dataPane);
+                            //grids.add(dataPane);
+                            //adding the gridpanes dataPane in the hGrid hbox to be displayed horizontally
+                            hGrid.getChildren().add(dataPane);
+                            //making hGrid scrollable
+                            scrollHGrid.setContent(hGrid);
+
+                        }
+                        //adding the scroll grids to the main layout of each tab
+                        tabcontent.getChildren().add(scrollHGrid);
 
                     }
-
-                    tabcontent.getChildren().add(scrollHGrid);
-
                 }
+            }catch (Exception e){
+
             }
 
-        } catch (Exception e1) {
+    }
+
+    public void correlationFunction(){
+
+        try {
+            tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+            System.out.println("Tab " + tabID + "is being manipulated by user.");
+        }catch (Exception e){
 
         }
+        /*ArrayList<String> temp = new ArrayList<>();
+
+        for(DataFile f: files){
+            if(tabID.equals(f.getName())){
+                //temp.setcNames(f.getcNames());
+                temp = f.getcNames();
+                //System.out.println(tabID);
+                tabPath = f.getPath();
+                //System.out.println(tabPath);
+            }else{
+
+            }
+        }
+
+        try {
+
+            data = ReadCSV.readFile(tabPath);
+            //System.out.println(data[0].length);
+            //System.out.println(data.length);
+
+            int numCol = data[0].length;
+            int numRow = data.length;
+
+            ArrayList<Object> a;
+            ColumnData columnData;
+            cData = new ArrayList<>();
+
+
+            for (int i = 0; i < numCol; i = i + 1) {
+
+
+                columnData = new ColumnData();
+
+                columnData.setName(temp.get(i));
+                //System.out.println(temp.getcNames().get(i));
+
+                a = new ArrayList<>();
+
+                for (int j = 0; j < numRow; j = j + 1) {
+
+                    Object s = data[j][i];
+
+                    if (s == null || s.toString().equals(null) || s.toString().length() == 0) {
+
+                        a.add(" ");
+
+                    } else {
+                        a.add(s);
+                    }
+
+                    //System.out.println(s);
+
+                }
+                columnData.setData(a);
+
+                cData.add(columnData);
+
+                //file.getColData().add(columnData);
+            }
+        }catch (Exception e){
+
+        }*/
+
+        readFile(files,tabID,path,data,cData);
+
+
+        //Assigning arraylist of data to columnData
+        /*for(DataFile f: files){
+            if(f.getName().equals(tabID)){
+                f.setColData(cData);
+
+            }
+        }*/
+
+        ArrayList<String> corrCols = new ArrayList<>();
+
+        ArrayList<ColumnData> corrData = new ArrayList<>();
+
+
+        selectedCheckbox(corrCols, files,tabID);
+
+        if(corrCols.size() > 2 || corrCols.size() < 2){
+            alertBox.display("Error","Please select only 2 columns to get their correlation coefficient");
+
+        }else if(corrCols.size() == 2){
+
+            for(DataFile f: files){
+
+                //Searches for the file that matches the tab ID
+                if(f.getName().equals(tabID)){
+
+                    for(String s:corrCols){
+
+                        //for all the columns in the data file
+                        for(ColumnData c: f.getColData()){
+
+                            //Check which column was selected by the user and display these tables
+                            if(c.getName().equals(s)){
+                                String check = checkVariable.checkVar(c.getData());
+
+                                if(check.equals("Integer") || check.equals("Double")) {
+
+                                    System.out.println(s);
+                                    corrData.add(c);
+                                }else{
+
+                                    alertBox.display("Error","One or more of the selected " + "\n" +
+                                            "contains an unsuitable data type " + "\n" +
+                                            "for correlation coefficient");
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            for(ColumnData c:corrData){
+                System.out.println(c.getName());
+            }
+
+            try {
+                correlationCoefficient.corrCoefWindow(corrData.get(0), corrData.get(1));
+            }catch (Exception e){
+
+            }
+        }
+
 
     }
 
     /**
-     *
-     * @return
+     * vbox containing the data values
+     * @return vbox
      */
     public VBox dataCol(){
 
         VBox vbox = new VBox();
         vbox.setPrefWidth(180);
         vbox.setPrefHeight(400);
-        vbox.setAlignment(Pos.CENTER_LEFT);
+        vbox.setAlignment(Pos.TOP_LEFT);
 
         return vbox;
     }
 
     /**
-     *
-     * @return
+     * hbox that will contain the data columns
+     * @return hbox
      */
     public HBox grids(){
 
@@ -730,7 +968,7 @@ public class Main extends Application{
     }
 
     /**
-     *
+     * create a new vbox to contain the statistical information
      * @param text
      * @param grid
      */
@@ -747,6 +985,102 @@ public class Main extends Application{
 
         grid.add(scroll,0,3);
 
+    }
+
+    public static void selectedCheckbox(ArrayList<String> s, ArrayList<DataFile> dF, String id){
+
+        //Getting all the checkboxes that are selected
+        //and adding those that are selected in an arraylist
+        try {
+            for (DataFile f : dF) {
+                if (id.equals(f.getName())) {
+                    for (CheckBox c : f.getCheckBoxHeaders()) {
+                        if (c.isSelected()) {
+                            s.add(c.getId());
+
+                        }
+                    }
+                }
+            }
+        }catch(Exception e){
+
+        }
+    }
+
+    public static void readFile(ArrayList<DataFile> dfX, String idX, String pathX, Object[][] oX, ArrayList<ColumnData> cdX) {
+
+        ArrayList<String> temp = new ArrayList<>();
+
+        for (DataFile f : dfX) {
+            if (idX.equals(f.getName())) {
+                //temp.setcNames(f.getcNames());
+                temp = f.getcNames();
+                //System.out.println(tabID);
+                pathX = f.getPath();
+                //System.out.println(tabPath);
+            } else {
+
+            }
+        }
+
+        //Read the csv file's body
+        try {
+
+            oX = ReadCSV.readFile(pathX);
+            //System.out.println(data[0].length);
+            //System.out.println(data.length);
+
+            int numCol = oX[0].length;
+            int numRow = oX.length;
+
+            ArrayList<Object> a;
+            ColumnData columnData;
+            cdX = new ArrayList<>();
+
+
+            for (int i = 0; i < numCol; i = i + 1) {
+
+
+                columnData = new ColumnData();
+
+                columnData.setName(temp.get(i));
+                //System.out.println(temp.getcNames().get(i));
+
+                a = new ArrayList<>();
+
+                for (int j = 0; j < numRow; j = j + 1) {
+
+                    Object s = oX[j][i];
+
+                    if (s == null || s.toString().equals(null) || s.toString().length() == 0) {
+
+                        a.add(" ");
+
+                    } else {
+                        a.add(s);
+                    }
+
+                    //System.out.println(s);
+
+                }
+                columnData.setData(a);
+
+                cdX.add(columnData);
+
+                //file.getColData().add(columnData);
+            }
+
+        }catch(Exception e){
+
+        }
+
+        //Assigning arraylist of data to columnData
+        for(DataFile f: dfX){
+            if(f.getName().equals(idX)){
+                f.setColData(cdX);
+
+            }
+        }
     }
 
 

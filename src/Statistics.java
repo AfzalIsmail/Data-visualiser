@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Statistics {
 
@@ -9,14 +10,16 @@ public class Statistics {
 
             double d = 0;
 
-            if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
+            /*if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
 
                 d = 0;
 
             }else {
 
                 d = Double.parseDouble(o.toString());
-            }
+            }*/
+
+            d = pDouble(o);
 
             sum = sum + d;
         }
@@ -52,14 +55,16 @@ public class Statistics {
             double diff = 0;
             double sq = 0;
 
-            if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
+            /*if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
 
                 d = 0;
 
             }else {
 
                 d = Double.parseDouble(o.toString());
-            }
+            }*/
+
+            d = pDouble(o);
 
             diff = d - meanM;
 
@@ -82,6 +87,64 @@ public class Statistics {
 
         return sd;
 
+
+    }
+
+    public static double getMin(ArrayList<Object> a){
+
+        ArrayList<Double> arr = new ArrayList<>();
+
+        for(Object o: a){
+
+            double d = pDouble(o);
+
+            if(d ==0 && o.equals(" ")){
+
+            }else {
+                arr.add(d);
+            }
+        }
+
+        double min = Collections.min(arr);
+
+        return min;
+    }
+
+    public static double getMax(ArrayList<Object> a){
+
+        ArrayList<Double> arr = new ArrayList<>();
+
+        for(Object o: a){
+
+            double d = pDouble(o);
+
+            if(d ==0 && o.equals(" ")){
+
+            }else {
+                arr.add(d);
+            }
+
+        }
+
+        double max = Collections.max(arr);
+
+        return max;
+    }
+
+    public static double pDouble(Object a){
+
+        double d = 0;
+
+        if(a == null || a.toString().length() == 0 || a.toString().equals(" ")){
+
+            d = 0;
+
+        }else {
+
+            d = Double.parseDouble(a.toString());
+        }
+
+        return d;
 
     }
 

@@ -16,10 +16,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -65,6 +68,8 @@ public class Main extends Application{
 
     ScrollPane scrollData;
 
+    Stage window;
+
 
     /**
      *
@@ -80,9 +85,11 @@ public class Main extends Application{
      * @param primaryStage
      */
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage){
 
-        primaryStage.setTitle("DVision");
+        window = primaryStage;
+
+        window.setTitle("DVision");
 
         currentFile = new ArrayList<>();
         files = new ArrayList<>();
@@ -150,7 +157,7 @@ public class Main extends Application{
             System.out.println("Browse file menu item pressed.");
 
             if(files.size() <= 20) {
-                displayHeaders(primaryStage);
+                displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
                 System.out.println("File limit of 20 reached.");
@@ -163,7 +170,7 @@ public class Main extends Application{
             System.out.println("Import file icon pressed.");
 
             if(files.size() <= 20) {
-                displayHeaders(primaryStage);
+                displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
                 System.out.println("File limit of 20 reached.");
@@ -211,20 +218,57 @@ public class Main extends Application{
         Scene scene = new Scene(borderPane, 1400, 750);
         //scene.getStylesheets().add("styleSheet.css");
 
-        primaryStage.getIcons().add(logo);
-        primaryStage.setScene(scene);
+
+            window.setOnCloseRequest(e -> {
+                e.consume();
+
+                try {
+                closeProgram();
+            }catch (IOException i){
+
+            }
+
+            });
+
+
+        window.getIcons().add(logo);
+        window.setScene(scene);
 
         //window cannot be resized
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        window.setResizable(false);
+        window.show();
 
+    }
+
+    private void closeProgram() throws IOException {
+
+        boolean answer = confirmBox.display("Close request", "Are you sure you want to exit" + "\n" +
+                                                                                "the program?");
+
+        if(answer){
+
+            logFile.saveLog();
+
+            window.close();
+        }
+
+        //---- closes only the current window
+        //window.close();
+
+        //----- Simply prints a confirmation text
+        /*System.out.println("File is saved");
+
+
+
+        //---- closes the whole program
+        //Platform.exit();*/
     }
 
     /**
      * Function to open file browser and store the name and path of each file in an arraylist
      * @param stage
      */
-    public void fileBrowser(Stage stage, ArrayList<DataFile> paths){
+    public void fileBrowser(Stage stage, ArrayList<DataFile> currentPath, ArrayList<DataFile> paths){
 
         try {
 
@@ -238,11 +282,11 @@ public class Main extends Application{
             logFile.addToLog("File " + selectedFile.getName() + " is selected");
             System.out.println("File " + selectedFile.getName() + " is selected");
 
+                    dataFile.setName(selectedFile.getName());
+                    dataFile.setPath(selectedFile.getPath());
 
-            dataFile.setName(selectedFile.getName());
-            dataFile.setPath(selectedFile.getPath());
+                    currentPath.add(dataFile);
 
-            paths.add(dataFile);
 
         }catch (Exception e){
             System.out.println("No file chosen.");
@@ -332,7 +376,7 @@ public class Main extends Application{
         System.out.println("File browser opened");
 
         //calling the filebrowser function
-        fileBrowser(stage, currentFile);
+        fileBrowser(stage, currentFile, files);
 
         try {
             //iterates over files arraylist
@@ -447,14 +491,8 @@ public class Main extends Application{
 
                         //calling displayTableFunction function
                         displayTableFunction(tabContent, grids, scrollGrids);
-                        //correlation.setDisable(false);
-                        //Tooltip coffT = new Tooltip("Select 2 columns to get the correlation coefficient.");
-                        //correlation.setTooltip(coffT);
-
 
                     });
-
-                    //correlation.setDisable(true);
 
                     correlation.setOnAction(event2 -> correlationFunction());
 
@@ -534,23 +572,6 @@ public class Main extends Application{
 
         }
 
-        //Getting all the checkboxes that are selected
-        //and adding those that are selected in an arraylist
-        /*try {
-            for (DataFile f : files) {
-                if (tabID.equals(f.getName())) {
-                    for (CheckBox c : f.getCheckBoxHeaders()) {
-                        if (c.isSelected()) {
-                            colsToDisplay.add(c.getId());
-
-                        }
-                    }
-                }
-            }
-        }catch(Exception e){
-
-        }*/
-
         selectedCheckbox(colsToDisplay,files,tabID);
 
         //Testing
@@ -558,84 +579,8 @@ public class Main extends Application{
             //System.out.println(s);
         }
 
-        //temp.setName(tabID);
-
-        //Search for the file with the same ID as the current tab in the files array list
-        //And get the path for that file
-        /*ArrayList<String> temp = new ArrayList<>();
-
-        for(DataFile f: files){
-            if(tabID.equals(f.getName())){
-                //temp.setcNames(f.getcNames());
-                temp = f.getcNames();
-                //System.out.println(tabID);
-                tabPath = f.getPath();
-                //System.out.println(tabPath);
-            }else{
-
-            }
-        }
-
-        //Read the csv file's body
-        try {
-
-            data = ReadCSV.readFile(tabPath);
-            //System.out.println(data[0].length);
-            //System.out.println(data.length);
-
-            int numCol = data[0].length;
-            int numRow = data.length;
-
-            ArrayList<Object> a;
-            ColumnData columnData;
-            cData = new ArrayList<>();
-
-
-            for (int i = 0; i < numCol; i = i + 1) {
-
-
-                columnData = new ColumnData();
-
-                columnData.setName(temp.get(i));
-                //System.out.println(temp.getcNames().get(i));
-
-                a = new ArrayList<>();
-
-                for (int j = 0; j < numRow; j = j + 1) {
-
-                    Object s = data[j][i];
-
-                    if(s == null || s.toString().equals(null) || s.toString().length() == 0){
-
-                        a.add(" ");
-
-                    }else{
-                        a.add(s);
-                    }
-
-                //System.out.println(s);
-
-                }
-                columnData.setData(a);
-
-                cData.add(columnData);
-
-                //file.getColData().add(columnData);
-            }
-        } catch (Exception e1) {
-
-        }*/
 
         readFile(files,tabID,path,data,cData);
-
-
-            //Assigning arraylist of data to columnData
-            /*for(DataFile f: files){
-                if(f.getName().equals(tabID)){
-                    f.setColData(cData);
-
-                }
-            }*/
 
             //Testing
             /*for(DataFile f: files){
@@ -736,6 +681,14 @@ public class Main extends Application{
                                         double variance = Statistics.getVariance((c.getData()), mean);
                                         double stDeviation = Statistics.getStDeviation(variance);
 
+                                        //--------------------------------------------------------sorting
+                                        ArrayList<Double> sortA =  numericalSorting.sortAsc(c.getData());
+                                        System.out.println(sortA);
+
+                                        ArrayList<Double> sortD = numericalSorting.sortDesc(c.getData());
+                                        System.out.println(sortD);
+
+
                                         DecimalFormat df = new DecimalFormat(".####");
 
                                         //System.out.println(sum);
@@ -746,6 +699,8 @@ public class Main extends Application{
                                         Text doubleText = new Text("Data type: " + check + "\n" +
                                                 "Length of data: " + c.getData().size() + "\n" +
                                                 "Sum of data: " + df.format(sum) + "\n" +
+                                                "Min value: " + Statistics.getMin(c.getData()) + "\n" +
+                                                "Max value: " + Statistics.getMax(c.getData()) + "\n" +
                                                 "Mean: " + df.format(mean) + "\n" +
                                                 "Variance: " + df.format(variance) + "\n" +
                                                 "Std. dev: " + df.format(stDeviation) + "\n" +
@@ -778,7 +733,7 @@ public class Main extends Application{
 
                                 }
                             }
-                            //adding the data values to the 2nd grid poeition in the gridpane
+                            //adding the data values to the 2nd grid position in the gridpane
                             dataPane.add(scrollData, 0, 1);
 
                             //tabcontent.getChildren().add(dataPane);
@@ -808,79 +763,9 @@ public class Main extends Application{
         }catch (Exception e){
 
         }
-        /*ArrayList<String> temp = new ArrayList<>();
-
-        for(DataFile f: files){
-            if(tabID.equals(f.getName())){
-                //temp.setcNames(f.getcNames());
-                temp = f.getcNames();
-                //System.out.println(tabID);
-                tabPath = f.getPath();
-                //System.out.println(tabPath);
-            }else{
-
-            }
-        }
-
-        try {
-
-            data = ReadCSV.readFile(tabPath);
-            //System.out.println(data[0].length);
-            //System.out.println(data.length);
-
-            int numCol = data[0].length;
-            int numRow = data.length;
-
-            ArrayList<Object> a;
-            ColumnData columnData;
-            cData = new ArrayList<>();
-
-
-            for (int i = 0; i < numCol; i = i + 1) {
-
-
-                columnData = new ColumnData();
-
-                columnData.setName(temp.get(i));
-                //System.out.println(temp.getcNames().get(i));
-
-                a = new ArrayList<>();
-
-                for (int j = 0; j < numRow; j = j + 1) {
-
-                    Object s = data[j][i];
-
-                    if (s == null || s.toString().equals(null) || s.toString().length() == 0) {
-
-                        a.add(" ");
-
-                    } else {
-                        a.add(s);
-                    }
-
-                    //System.out.println(s);
-
-                }
-                columnData.setData(a);
-
-                cData.add(columnData);
-
-                //file.getColData().add(columnData);
-            }
-        }catch (Exception e){
-
-        }*/
 
         readFile(files,tabID,path,data,cData);
-
-
-        //Assigning arraylist of data to columnData
-        /*for(DataFile f: files){
-            if(f.getName().equals(tabID)){
-                f.setColData(cData);
-
-            }
-        }*/
+        
 
         ArrayList<String> corrCols = new ArrayList<>();
 
@@ -1082,6 +967,5 @@ public class Main extends Application{
             }
         }
     }
-
 
 }

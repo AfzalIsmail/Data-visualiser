@@ -131,6 +131,35 @@ public class Statistics {
         return max;
     }
 
+    public static double getMedian(ArrayList<Object> a){
+
+        ArrayList<Double> arr = numericalSorting.sortAsc(a);
+
+        double median;
+
+        int size = arr.size();
+
+        double firstVal = arr.get(size/2);
+
+        double secondVal = arr.get(size/2 - 1);
+
+        if(size % 2 == 0){
+
+            double sumMiddleNumbers = firstVal + secondVal;
+
+            median = sumMiddleNumbers/2;
+
+        }else{
+
+            median = firstVal;
+
+        }
+
+        return median;
+
+    }
+
+
     public static double pDouble(Object a){
 
         double d = 0;

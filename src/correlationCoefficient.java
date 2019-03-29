@@ -1,11 +1,16 @@
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import static javafx.scene.paint.Color.rgb;
 
 public class correlationCoefficient {
 
@@ -17,7 +22,7 @@ public class correlationCoefficient {
         Stage window = new Stage();
 
         window.setTitle("Correlation coefficient between " + a.getName() + " and " + b.getName());
-        window.setMinHeight(300);
+        window.setMinHeight(600);
         window.setMinWidth(450);
 
         ArrayList<Double> aDouble = new ArrayList<>();
@@ -76,17 +81,34 @@ public class correlationCoefficient {
 
         //Text t = new Text(coefficient.toString());
 
+        //------------------------------------------------------------------------code for graph
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        ScatterChart<Number,Number> sc = new ScatterChart<>(xAxis,yAxis);
+
+        xAxis.setLabel(a.getName());
+        yAxis.setLabel(b.getName());
+        sc.setTitle("Correlation coefficient");
+        XYChart.Series series1 = new XYChart.Series();
+
+        for(int i = 0;i<aDouble.size();i++){
+            series1.getData().add(new XYChart.Data(aDouble.get(i),bDouble.get(i)));
+
+        }
+        sc.getData().add(series1);
+        //sc.setStyle(.symbol{-fx-background-color: rgb( 51, 170, 168)});
+
         VBox vbox = new VBox();
-        vbox.getChildren().addAll(t1,t2);
+        vbox.getChildren().addAll(t1,t2,sc);
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10,10,10,20));
 
         Scene scene = new Scene(vbox);
 
+        scene.getStylesheets().add("scatterChart.css");
+
         window.setScene(scene);
         window.show();
-
-
 
 
     }

@@ -29,9 +29,10 @@ public class confirmBox {
 
 
         //create 2 buttons
-        Button yesButton = new Button("yes");
+        Button yesButton = new Button("Yes");
         yesButton.setStyle("-fx-background-color: rgb( 51, 170, 168)");
-        Button noButton = new Button("cancel");
+        Button noButton = new Button("Cancel");
+        noButton.setStyle("-fx-background-color: rgb(224, 224, 224)");
 
         yesButton.setOnAction(e -> {
             answer = true;

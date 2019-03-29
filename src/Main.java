@@ -40,6 +40,8 @@ public class Main extends Application{
 
     Button displayTable, importFile, saveData, correlation;
 
+    Button sortAsc, sortDsc, reset;
+
     ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
     ArrayList<String> colNames;
@@ -306,7 +308,7 @@ public class Main extends Application{
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(8);
         vbox.setPrefWidth(200);
-        vbox.setMaxHeight(300);
+        vbox.setPrefHeight(500);
         //vbox.setStyle("-fx-background-color: rgb(119, 214, 211)");
 
         //Text title = new Text("Data columns");
@@ -466,7 +468,8 @@ public class Main extends Application{
                     //Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
                     correlation.setId(tabID);
-                    Tooltip corrF = new Tooltip("Select and display the required columns first");
+                    correlation.setStyle("-fx-background-color: rgb(224, 224, 224)");
+                    Tooltip corrF = new Tooltip("Select 2 columns to find their correlation coefficient");
                     correlation.setTooltip(corrF);
                     columnChoice.getChildren().add(correlation);
 
@@ -474,8 +477,19 @@ public class Main extends Application{
                     scrollPane = new ScrollPane();
                     scrollPane.setContent(columnChoice);
 
+                    VBox leftButtons = new VBox();
+                    leftButtons.setStyle("-fx-background-color: rgb(249, 249, 249)");
+                    leftButtons.setPrefHeight(100);
+                    leftButtons.setPrefWidth(200);
+                    leftButtons.setSpacing(10);
+                    leftButtons.setPadding(new Insets(10,10,10,10));
+                    leftButtons.getChildren().addAll(displayTable,correlation);
+
+                    VBox leftPanel = new VBox();
+                    leftPanel.getChildren().addAll(scrollPane,leftButtons);
+
                     //adding vbox scrollpane to hbox
-                    tabContent.getChildren().add(scrollPane);
+                    tabContent.getChildren().add(leftPanel);
 
 
                     //Area where the data tables will appear
@@ -631,6 +645,19 @@ public class Main extends Application{
                                     header.getChildren().add(colName);
                                     header.setAlignment(Pos.CENTER);
 
+                                    //---------------------------------------------------------------------------------------------
+                                    Text displayType = new Text();
+
+                                    sortAsc = new Button("Asc");
+                                    sortDsc= new Button("Dsc");
+                                    reset = new Button("Rset");
+
+                                    HBox buttons = new HBox();
+                                    buttons.getChildren().addAll(sortAsc,sortDsc,reset);
+
+                                    header.getChildren().add(buttons);
+                                    //--------------------------------------------------------------------------------------------
+
                                     //adding the column header to the first top grid of the grid pane
                                     dataPane.add(header, 0, 0);
 
@@ -680,13 +707,14 @@ public class Main extends Application{
                                         double mean = Statistics.getMean(c.getData(), sum);
                                         double variance = Statistics.getVariance((c.getData()), mean);
                                         double stDeviation = Statistics.getStDeviation(variance);
+                                        double median = Statistics.getMedian(c.getData());
 
-                                        //--------------------------------------------------------sorting
-                                        ArrayList<Double> sortA =  numericalSorting.sortAsc(c.getData());
-                                        System.out.println(sortA);
+                                        //-------------------------------------------------------------------------------sorting
+                                        //ArrayList<Double> sortA =  numericalSorting.sortAsc(c.getData());
+                                        //System.out.println(sortA);
 
-                                        ArrayList<Double> sortD = numericalSorting.sortDesc(c.getData());
-                                        System.out.println(sortD);
+                                        //ArrayList<Double> sortD = numericalSorting.sortDesc(c.getData());
+                                        //System.out.println(sortD);
 
 
                                         DecimalFormat df = new DecimalFormat(".####");
@@ -702,6 +730,7 @@ public class Main extends Application{
                                                 "Min value: " + Statistics.getMin(c.getData()) + "\n" +
                                                 "Max value: " + Statistics.getMax(c.getData()) + "\n" +
                                                 "Mean: " + df.format(mean) + "\n" +
+                                                "Median: " + median + "\n" +
                                                 "Variance: " + df.format(variance) + "\n" +
                                                 "Std. dev: " + df.format(stDeviation) + "\n" +
                                                 "Missing values: " + missVal);
@@ -720,9 +749,7 @@ public class Main extends Application{
 
                                         //System.out.println(st);
 
-                                        Text dataRow = null;
-
-                                        dataRow = new Text(o.toString());
+                                        Text dataRow =  new Text(o.toString());
 
                                         //adding each data value to the vbox dataColumn
                                         dataColumn.getChildren().add(dataRow);
@@ -862,7 +889,7 @@ public class Main extends Application{
         VBox vbox = new VBox();
         vbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
         vbox.setPrefWidth(180);
-        vbox.setPrefHeight(170);
+        vbox.setPrefHeight(152);
         vbox.getChildren().add(text);
 
         ScrollPane scroll = new ScrollPane();

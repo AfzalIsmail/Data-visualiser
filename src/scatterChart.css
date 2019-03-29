@@ -1,0 +1,6 @@
+.default-color5.chart-symbol { /* hollow circle */
+    -fx-stroke: rgb(51, 170, 168);
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}

@@ -1,4 +1,4 @@
-import com.sun.tools.javac.file.SymbolArchive;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -38,13 +38,13 @@ public class Main extends Application{
 
     MenuItem browseFile, save, exit,manual;
 
-    Button displayTable, importFile, saveData, correlation;
+    private Button displayTable, importFile, saveData, correlation, chart;
 
-    Button sortAsc, sortDsc, reset;
+    private Button sortAsc, sortDsc, reset;
 
-    ArrayList<DataFile> currentFile, files = new ArrayList<>();
+    private ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
-    ArrayList<String> colNames;
+    private ArrayList<String> colNames;
 
     ArrayList<ColumnData> cData;
 
@@ -254,16 +254,6 @@ public class Main extends Application{
             window.close();
         }
 
-        //---- closes only the current window
-        //window.close();
-
-        //----- Simply prints a confirmation text
-        /*System.out.println("File is saved");
-
-
-
-        //---- closes the whole program
-        //Platform.exit();*/
     }
 
     /**
@@ -463,7 +453,7 @@ public class Main extends Application{
                     Tooltip disTable = new Tooltip("Click to display selected columns.");
                     displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
-                    columnChoice.getChildren().add(displayTable);
+                    //columnChoice.getChildren().add(displayTable);
 
                     //Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
@@ -471,7 +461,13 @@ public class Main extends Application{
                     correlation.setStyle("-fx-background-color: rgb(224, 224, 224)");
                     Tooltip corrF = new Tooltip("Select 2 columns to find their correlation coefficient");
                     correlation.setTooltip(corrF);
-                    columnChoice.getChildren().add(correlation);
+                    //columnChoice.getChildren().add(correlation);
+
+                    chart = new Button("Display charts");
+                    chart.setStyle("-fx-background-color: rgb(224, 224, 224)");
+                    Tooltip tChart = new Tooltip("Select all the columns you wish to represent on charts");
+                    chart.setTooltip(tChart);
+
 
                     //Make pane scrollable
                     scrollPane = new ScrollPane();
@@ -483,7 +479,7 @@ public class Main extends Application{
                     leftButtons.setPrefWidth(200);
                     leftButtons.setSpacing(10);
                     leftButtons.setPadding(new Insets(10,10,10,10));
-                    leftButtons.getChildren().addAll(displayTable,correlation);
+                    leftButtons.getChildren().addAll(displayTable,correlation,chart);
 
                     VBox leftPanel = new VBox();
                     leftPanel.getChildren().addAll(scrollPane,leftButtons);
@@ -509,6 +505,8 @@ public class Main extends Application{
                     });
 
                     correlation.setOnAction(event2 -> correlationFunction());
+
+                    chart.setOnAction(event -> displayChartWindow());
 
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
@@ -588,10 +586,29 @@ public class Main extends Application{
 
         selectedCheckbox(colsToDisplay,files,tabID);
 
+
+        //check if the data arraylist is empty, if it is the program will read the body of the csv file
+        /*for(DataFile f: files){
+
+            if (f.getName().equals(tabID)) {
+
+                if (f.getColNum() == 0) {
+
+                    //selectedCheckbox(colsToDisplay, files, tabID);
+
+                    readFile(files, tabID, path, data, cData);
+
+                } else {
+
+                }
+
+            }
+        }*/
+
         //Testing
-        for(String s:colsToDisplay){
+        //for(String s:colsToDisplay){
             //System.out.println(s);
-        }
+        //}
 
 
         readFile(files,tabID,path,data,cData);
@@ -678,25 +695,49 @@ public class Main extends Application{
 
                                         Text distinctText;
 
+                                        VBox distinctBox = new VBox();
+                                        distinctBox.setStyle("-fx-background-color: rgb(247, 247, 247)");
+
+                                            distinct.forEach((k, v) -> {
+                                                Text t = new Text("->" + k + " = " + v);
+
+                                                distinctBox.getChildren().add(t);
+
+                                            });
+
+                                            VBox allDistinct = new VBox();
+
+
+
                                         //check if the number of distinct values is not over 20
                                         //otherwise it will not be displayed
                                         if (distinct.size() <= 20) {
 
                                             distinctText = new Text("Data type: " + check + "\n" +
                                                     "Length of data: " + c.getData().size() + "\n" +
-                                                    "Final distinct elements: " + distinct + "\n" +
+                                                    "No of missing values: " + missVal + "\n" +
                                                     "No of elements: " + distinct.size() + "\n" +
-                                                    "No of missing values: " + missVal);
+                                                    "Distinct elements: ");
+
+                                            allDistinct.getChildren().addAll(distinctText,distinctBox);
+
+                                            displayStats(allDistinct, dataPane);
+
                                         } else {
                                             distinctText = new Text("Data type: " + check + "\n" +
                                                     "Length of data: " + c.getData().size() + "\n" +
                                                     "No of missing values: " + missVal + "\n" +
-                                                    "Number of distinct " + "\n" + "elements exceed 20!");
+                                                    "Number of distinct " + "\n" +
+                                                    "elements exceed 20!");
+
+                                            allDistinct.getChildren().addAll(distinctText);
+
+                                            displayStats(allDistinct, dataPane);
 
                                         }
 
                                         //adding the stats to be displayed in a vbox in the 3rd grid of the datapane
-                                        displayStats(distinctText, dataPane);
+
 
                                         //display stats if data type id int or double
                                     } else if (check.equals("Integer") || check.equals("Double")) {
@@ -724,6 +765,8 @@ public class Main extends Application{
                                         //System.out.println(variance);
                                         //System.out.println(stDeviation);
 
+                                        VBox allDouble = new VBox();
+
                                         Text doubleText = new Text("Data type: " + check + "\n" +
                                                 "Length of data: " + c.getData().size() + "\n" +
                                                 "Sum of data: " + df.format(sum) + "\n" +
@@ -737,8 +780,10 @@ public class Main extends Application{
 
                                         doubleText.setFont(Font.font("Source sans pro", 13));
 
+                                        allDouble.getChildren().addAll(doubleText);
 
-                                        displayStats(doubleText, dataPane);
+
+                                        displayStats(allDouble, dataPane);
 
                                     }
 
@@ -778,11 +823,13 @@ public class Main extends Application{
                 }
             }catch (Exception e){
 
+                logFile.addToLog("Error has occurred when trying display the data columns.");
+
             }
 
     }
 
-    public void correlationFunction(){
+    private void correlationFunction(){
 
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
@@ -790,6 +837,23 @@ public class Main extends Application{
         }catch (Exception e){
 
         }
+
+        /*for(DataFile f: files){
+
+            if (f.getName().equals(tabID)) {
+
+                if (f.getColNum() == 0) {
+
+                    //selectedCheckbox(colsToDisplay, files, tabID);
+
+                    readFile(files, tabID, path, data, cData);
+
+                } else {
+
+                }
+
+            }
+        }*/
 
         readFile(files,tabID,path,data,cData);
         
@@ -801,8 +865,13 @@ public class Main extends Application{
 
         selectedCheckbox(corrCols, files,tabID);
 
-        if(corrCols.size() > 2 || corrCols.size() < 2){
+        if(corrCols.size() > 2){
+
             alertBox.display("Error","Please select only 2 columns to get their correlation coefficient");
+
+        }else if(corrCols.size() < 2){
+
+            alertBox.display("Error","Please select 2 columns to get their correlation coefficient");
 
         }else if(corrCols.size() == 2){
 
@@ -844,8 +913,12 @@ public class Main extends Application{
             }
 
             try {
+
                 correlationCoefficient.corrCoefWindow(corrData.get(0), corrData.get(1));
+
             }catch (Exception e){
+
+                logFile.addToLog("Error occurred when trying to check for the correlation coefficient");
 
             }
         }
@@ -853,11 +926,17 @@ public class Main extends Application{
 
     }
 
+    private void displayChartWindow(){
+
+        chartWindow.display();
+
+    }
+
     /**
      * vbox containing the data values
      * @return vbox
      */
-    public VBox dataCol(){
+    private VBox dataCol(){
 
         VBox vbox = new VBox();
         vbox.setPrefWidth(180);
@@ -871,7 +950,7 @@ public class Main extends Application{
      * hbox that will contain the data columns
      * @return hbox
      */
-    public HBox grids(){
+    private HBox grids(){
 
         HBox hbox = new HBox();
         //hbox.setPrefWidth(1100);
@@ -881,16 +960,16 @@ public class Main extends Application{
 
     /**
      * create a new vbox to contain the statistical information
-     * @param text
+     * @param v
      * @param grid
      */
-    public void displayStats(Text text, GridPane grid){
+    private void displayStats(VBox v, GridPane grid){
 
         VBox vbox = new VBox();
         vbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
         vbox.setPrefWidth(180);
         vbox.setPrefHeight(152);
-        vbox.getChildren().add(text);
+        vbox.getChildren().add(v);
 
         ScrollPane scroll = new ScrollPane();
         scroll.setContent(vbox);
@@ -899,7 +978,7 @@ public class Main extends Application{
 
     }
 
-    public static void selectedCheckbox(ArrayList<String> s, ArrayList<DataFile> dF, String id){
+    private static void selectedCheckbox(ArrayList<String> s, ArrayList<DataFile> dF, String id){
 
         //Getting all the checkboxes that are selected
         //and adding those that are selected in an arraylist
@@ -916,10 +995,12 @@ public class Main extends Application{
             }
         }catch(Exception e){
 
+            logFile.addToLog("Error occurred when selecting check boxes for headers");
+
         }
     }
 
-    public static void readFile(ArrayList<DataFile> dfX, String idX, String pathX, Object[][] oX, ArrayList<ColumnData> cdX) {
+    private static void readFile(ArrayList<DataFile> dfX, String idX, String pathX, Object[][] oX, ArrayList<ColumnData> cdX) {
 
         ArrayList<String> temp = new ArrayList<>();
 
@@ -983,6 +1064,8 @@ public class Main extends Application{
             }
 
         }catch(Exception e){
+
+            logFile.addToLog("Error occurred when trying to read csv file");
 
         }
 

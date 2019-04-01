@@ -4,31 +4,6 @@ import java.util.Map;
 
 public class Distinct {
 
-    Object o;
-    int count;
-
-    public Distinct(){
-
-        o = null;
-        count = 0;
-
-    }
-
-    public Object getO() {
-        return o;
-    }
-
-    public void setO(Object o) {
-        this.o = o;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
 
     /**
      *

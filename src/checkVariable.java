@@ -25,15 +25,15 @@ public class checkVariable {
 
             cChar++;
 
-        } else if (canConvertString(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
-
-            cString++;
-
         } else if (canConvertBoolean(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
 
             cBoolean++;
 
-        } else {
+        }else if (canConvertString(dataObject.get(i)) && !dataObject.get(i).toString().equals(" ")) {
+
+            cString++;
+
+        }  else {
 
         }
     }
@@ -47,14 +47,13 @@ public class checkVariable {
         }else if(cChar >=1) {
             varType = "Char";
 
+        }else if(cBoolean >= 1) {
+            varType = "Boolean";
+
         }
         else if(cString >= 1) {
             varType = "String";
             System.out.println(cString);
-
-        }
-        else if(cBoolean >= 1) {
-            varType = "Boolean";
 
         }else {
             varType = "Not recognised";
@@ -119,9 +118,19 @@ public class checkVariable {
 
     public static boolean canConvertBoolean (Object data)
     {
-        boolean res = true;
+        boolean res = false;
 
-        try
+        String test = data.toString();
+
+        if(test.equals("true") || test.equals("false")){
+
+            res = true;
+
+        }else{
+            res = false;
+        }
+
+        /*try
         {
             String test = data.toString();
             boolean test1 = Boolean.parseBoolean(test);
@@ -129,7 +138,7 @@ public class checkVariable {
         catch (Exception E)
         {
             res = false;
-        }
+        }*/
 
         return res;
     }

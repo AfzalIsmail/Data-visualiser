@@ -242,6 +242,10 @@ public class Main extends Application{
 
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     private void closeProgram() throws IOException {
 
         boolean answer = confirmBox.display("Close request", "Are you sure you want to exit" + "\n" +
@@ -685,7 +689,7 @@ public class Main extends Application{
 
                                     //if the data column is a string or char type
                                     //display length, distinct and frequency and missinf values
-                                    if (check.equals("String") || check.equals("Char")) {
+                                    if (check.equals("String") || check.equals("Char") || check.equals("Boolean")) {
                                         Map distinct = Distinct.getDistinct(c.getData());
                                         //System.out.println("Length of data : " + c.getData().size());
                                         //System.out.println("Final distinct elements : " + distinct);

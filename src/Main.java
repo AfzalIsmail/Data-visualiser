@@ -38,7 +38,7 @@ public class Main extends Application{
 
     MenuItem browseFile, save, exit,manual;
 
-    private Button displayTable, importFile, saveData, correlation, chart;
+    private Button displayTable, importFile, saveData, correlation, chart, anova;
 
     private Button sortAsc, sortDsc, reset;
 
@@ -237,7 +237,7 @@ public class Main extends Application{
         window.setScene(scene);
 
         //window cannot be resized
-        window.setResizable(false);
+        window.setResizable(true);
         window.show();
 
     }
@@ -337,7 +337,7 @@ public class Main extends Application{
      * HBox the that contains the load file and save file button icons
      * @return
      */
-    public HBox addSubMenuBar(){
+    private HBox addSubMenuBar(){
         HBox hBox = new HBox();
         VBox space = new VBox();
         space.setPrefWidth(10);
@@ -353,7 +353,7 @@ public class Main extends Application{
      * Creating ScrollPanes that can be added into other types of layouts
      * @return scrollPane
      */
-    public ScrollPane addScrollPane(){
+    private ScrollPane addScrollPane(){
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setPrefViewportWidth(1200);
 
@@ -365,7 +365,7 @@ public class Main extends Application{
      * and display them in their appropriate tab
      * @param stage
      */
-    public void displayHeaders(Stage stage){
+    private void displayHeaders(Stage stage){
 
         //Keeping log of when browseFile is pressed
         logFile.addToLog("File browser opened");
@@ -457,7 +457,7 @@ public class Main extends Application{
                     Tooltip disTable = new Tooltip("Click to display selected columns.");
                     displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
-                    //columnChoice.getChildren().add(displayTable);
+
 
                     //Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
@@ -465,7 +465,12 @@ public class Main extends Application{
                     correlation.setStyle("-fx-background-color: rgb(224, 224, 224)");
                     Tooltip corrF = new Tooltip("Select 2 columns to find their correlation coefficient");
                     correlation.setTooltip(corrF);
-                    //columnChoice.getChildren().add(correlation);
+
+                    //ANOVA button
+                    anova = new Button("ANOVA");
+
+
+
 
                     chart = new Button("Display charts");
                     chart.setStyle("-fx-background-color: rgb(224, 224, 224)");
@@ -483,9 +488,10 @@ public class Main extends Application{
                     leftButtons.setPrefWidth(200);
                     leftButtons.setSpacing(10);
                     leftButtons.setPadding(new Insets(10,10,10,10));
-                    leftButtons.getChildren().addAll(displayTable,correlation,chart);
+                    leftButtons.getChildren().addAll(displayTable,correlation,anova,chart);
 
                     VBox leftPanel = new VBox();
+                    leftPanel.setMinWidth(200);
                     leftPanel.getChildren().addAll(scrollPane,leftButtons);
 
                     //adding vbox scrollpane to hbox
@@ -509,6 +515,8 @@ public class Main extends Application{
                     });
 
                     correlation.setOnAction(event2 -> correlationFunction());
+
+                    anova.setOnAction(event -> anovaFunction());
 
                     chart.setOnAction(event -> displayChartWindow());
 
@@ -669,14 +677,14 @@ public class Main extends Application{
                                     //---------------------------------------------------------------------------------------------
                                     Text displayType = new Text();
 
-                                    sortAsc = new Button("Asc");
-                                    sortDsc= new Button("Dsc");
-                                    reset = new Button("Rset");
+                                    //sortAsc = new Button("Asc");
+                                    //sortDsc= new Button("Dsc");
+                                    //reset = new Button("Rset");
 
-                                    HBox buttons = new HBox();
-                                    buttons.getChildren().addAll(sortAsc,sortDsc,reset);
+                                    //HBox buttons = new HBox();
+                                    //buttons.getChildren().addAll(sortAsc,sortDsc,reset);
 
-                                    header.getChildren().add(buttons);
+                                    //header.getChildren().add(buttons);
                                     //--------------------------------------------------------------------------------------------
 
                                     //adding the column header to the first top grid of the grid pane
@@ -703,6 +711,7 @@ public class Main extends Application{
                                         distinctBox.setStyle("-fx-background-color: rgb(247, 247, 247)");
 
                                             distinct.forEach((k, v) -> {
+                                                
                                                 Text t = new Text("->" + k + " = " + v);
 
                                                 distinctBox.getChildren().add(t);
@@ -900,16 +909,13 @@ public class Main extends Application{
                                 }else{
 
                                     alertBox.display("Error","One or more of the selected " + "\n" +
-                                            "contains an unsuitable data type " + "\n" +
+                                            "column(s) contains an unsuitable data type " + "\n" +
                                             "for correlation coefficient");
                                 }
-
                             }
-
                         }
                     }
                 }
-
             }
 
             for(ColumnData c:corrData){
@@ -926,6 +932,79 @@ public class Main extends Application{
 
             }
         }
+
+
+    }
+
+    private void anovaFunction(){
+
+        try {
+            tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+            System.out.println("Tab " + tabID + "is being manipulated by user.");
+        }catch (Exception e){
+
+        }
+
+        ArrayList<String> anovaCols = new ArrayList<>();
+
+        ArrayList<ColumnData> anovaData = new ArrayList<>();
+
+        readFile(files,tabID,path,data,cData);
+
+        selectedCheckbox(anovaCols, files,tabID);
+
+        if(anovaCols.size() < 2){
+            alertBox.display("Error","Please select at least 2 columns to get the anova");
+
+        }else {
+
+            for (DataFile f : files) {
+
+                //Searches for the file that matches the tab ID
+                if (f.getName().equals(tabID)) {
+
+                    for (String s : anovaCols) {
+
+                        //for all the columns in the data file
+                        for (ColumnData c : f.getColData()) {
+
+                            //Check which column was selected by the user and display these tables
+                            if (c.getName().equals(s)) {
+                                String check = checkVariable.checkVar(c.getData());
+
+                                if (check.equals("Integer") || check.equals("Double")) {
+
+                                    anovaData.add(c);
+
+                                }else{
+
+                                    alertBox.display("Error","One or more of the selected " + "\n" +
+                                            "column(s) contains an unsuitable data type " + "\n" +
+                                            "for ANOVA");
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        try {
+
+            AnovaWindow.anovaWindow(anovaData);
+
+        }catch (Exception e){
+
+        }
+
+        for(ColumnData c: anovaData){
+            System.out.println(c.getName());
+        }
+
+
+
+
 
 
     }
@@ -972,7 +1051,7 @@ public class Main extends Application{
         VBox vbox = new VBox();
         vbox.setStyle("-fx-background-color: rgb(224, 224, 224)");
         vbox.setPrefWidth(180);
-        vbox.setPrefHeight(152);
+        vbox.setPrefHeight(170);
         vbox.getChildren().add(v);
 
         ScrollPane scroll = new ScrollPane();

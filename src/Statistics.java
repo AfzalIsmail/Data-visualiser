@@ -32,7 +32,8 @@ public class Statistics {
          double mean = 0;
          int sampleSize = 0;
 
-         sampleSize = a.size();
+         sampleSize = a.size() - MissingValues.missingData(a);
+         System.out.println(sampleSize);
          mean = sumS/sampleSize;
 
          return mean;
@@ -47,30 +48,41 @@ public class Statistics {
         double var = 0;
 
 
-        sampleSize = a.size();
+        sampleSize = a.size() - MissingValues.missingData(a);
+
+        //System.out.println(a.size());
+        //System.out.println(sampleSize);
+        //System.out.println(MissingValues.missingData(a));
 
         for(Object o: a){
 
-            double d = 0;
+            //double d = 0;
             double diff = 0;
             double sq = 0;
 
-            /*if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
+            if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
 
-                d = 0;
+                //d = 0;
+                System.out.println("One null found");
 
             }else {
 
-                d = Double.parseDouble(o.toString());
-            }*/
+                double d = Double.parseDouble(o.toString());
 
-            d = pDouble(o);
+                System.out.println(d);
 
-            diff = d - meanM;
+                diff = d - meanM;
 
-            sq = diff * diff;
+                sq = diff * diff;
 
-            sumSq = sumSq + sq;
+                sumSq = sumSq + sq;
+
+
+            }
+
+            //d = pDouble(o);
+
+
 
         }
 

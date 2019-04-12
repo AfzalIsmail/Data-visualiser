@@ -53,7 +53,7 @@ public class checkVariable {
         }
         else if(cString >= 1) {
             varType = "String";
-            System.out.println(cString);
+            //System.out.println(cString);
 
         }else {
             varType = "Not recognised";

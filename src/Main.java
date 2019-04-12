@@ -40,8 +40,6 @@ public class Main extends Application{
 
     private Button displayTable, importFile, saveData, correlation, chart, anova;
 
-    private Button sortAsc, sortDsc, reset;
-
     private ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
     private ArrayList<String> colNames;
@@ -842,6 +840,9 @@ public class Main extends Application{
 
     }
 
+    /**
+     * 
+     */
     private void correlationFunction(){
 
         try {
@@ -936,6 +937,9 @@ public class Main extends Application{
 
     }
 
+    /**
+     *
+     */
     private void anovaFunction(){
 
         try {
@@ -1002,16 +1006,67 @@ public class Main extends Application{
             System.out.println(c.getName());
         }
 
-
-
-
-
-
     }
 
     private void displayChartWindow(){
 
-        chartWindow.display();
+        try {
+            tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+            System.out.println("Tab " + tabID + "is being manipulated by user.");
+        }catch (Exception e){
+
+        }
+
+        ArrayList<String> chartCols = new ArrayList<>();
+
+        readFile(files,tabID,path,data,cData);
+
+        selectedCheckbox(chartCols, files,tabID);
+
+        int counterInt = 0, counterString = 0, counterBool = 0;
+
+        //ArrayList<ColumnData> chartData = new ArrayList<>();
+
+        if(chartCols.size() < 1){
+
+            alertBox.display("Error", "Please select at least one or more" + "\n" +
+                                        "to display the charts.");
+
+        }else {
+
+            /*for(DataFile d: files){
+
+                if(d.getName().equals(tabID)){
+
+                    for(String s : chartCols){
+
+                        for(ColumnData c: d.getColData()){
+
+                            if(c.getName().equals(s)){
+
+                                String checkVar = checkVariable.checkVar(c.getData());
+
+                                if(checkVar.equals("String") || checkVar.equals("Char")){
+
+                                    counterString = counterString + 1;
+
+                                }else if(checkVar.equals("Double") || checkVar.equals("Integer")){
+
+                                    counterInt = counterInt + 1;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }*/
+
+            //System.out.println(counterString);
+            //System.out.println(counterInt);
+
+            chartWindow.display(chartCols, files, tabPane);
+
+        }
 
     }
 
@@ -1061,6 +1116,12 @@ public class Main extends Application{
 
     }
 
+    /**
+     *
+     * @param s
+     * @param dF
+     * @param id
+     */
     private static void selectedCheckbox(ArrayList<String> s, ArrayList<DataFile> dF, String id){
 
         //Getting all the checkboxes that are selected
@@ -1083,6 +1144,14 @@ public class Main extends Application{
         }
     }
 
+    /**
+     *
+     * @param dfX
+     * @param idX
+     * @param pathX
+     * @param oX
+     * @param cdX
+     */
     private static void readFile(ArrayList<DataFile> dfX, String idX, String pathX, Object[][] oX, ArrayList<ColumnData> cdX) {
 
         ArrayList<String> temp = new ArrayList<>();

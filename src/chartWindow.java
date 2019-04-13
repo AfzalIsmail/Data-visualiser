@@ -3,12 +3,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -80,7 +81,7 @@ public class chartWindow {
 
                                 String checkVar = checkVariable.checkVar(c.getData());
 
-                                if (checkVar.equals("String") || checkVar.equals("Char")) {
+                                if (checkVar.equals("String") || checkVar.equals("Char") || checkVar.equals("Boolean")) {
 
                                     counterString = counterString + 1;
 
@@ -113,7 +114,7 @@ public class chartWindow {
 
         pieChart.setOnAction(e -> {
 
-            VBox v = pieChartDisp(catData);
+            VBox v = pieChartDisp(catData,numData);
 
             ScrollPane scrollV = new ScrollPane();
 
@@ -125,9 +126,37 @@ public class chartWindow {
         });
 
 
+        barChart.setOnAction(e -> {
 
-        System.out.println(counterString);
-        System.out.println(counterInt);
+            VBox v = barChartDisp(catData,numData);
+
+            ScrollPane scrollB = new ScrollPane();
+
+            scrollB.setContent(v);
+
+            Scene secondaryScene = new Scene(scrollB);
+
+            chartWindow.setScene(secondaryScene);
+        });
+
+        lineChart.setOnAction(e -> {
+
+            VBox v = lineChartDisp(numData,catData);
+
+            ScrollPane scrollL = new ScrollPane();
+
+            scrollL.setContent(v);
+
+            Scene secondaryScene = new Scene(scrollL);
+
+            chartWindow.setScene(secondaryScene);
+
+        });
+
+
+
+        //System.out.println(counterString);
+        //System.out.println(counterInt);
 
         HBox buttonsArea = new HBox();
         buttonsArea.setAlignment(Pos.CENTER);
@@ -144,11 +173,39 @@ public class chartWindow {
 
     }
 
-    public static VBox pieChartDisp(ArrayList<ColumnData> columnData){
+    public static VBox pieChartDisp(ArrayList<ColumnData> catData, ArrayList<ColumnData> numData){
 
         VBox charts = new VBox();
 
-        for(ColumnData c: columnData){
+        for(ColumnData cat: catData){
+
+            Map distinct = Distinct.getDistinct(cat.getData());
+
+            for(ColumnData num: numData){
+
+                if(distinct.size() == num.getData().size()){
+
+                    ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(new ArrayList<>());
+
+                    for(int i = 0; i<cat.getData().size();i++){
+
+                        String a = cat.getData().get(i).toString();
+                        double b = Statistics.pDouble(num.getData().get(i));
+
+                        pieChartData.add(new PieChart.Data(a,b));
+                    }
+
+                    PieChart chart = new PieChart(pieChartData);
+                    chart.setTitle(num.getName());
+
+                    charts.getChildren().add(chart);
+
+                }
+            }
+
+        }
+
+        for(ColumnData c: catData){
 
             Map distinct = Distinct.getDistinct(c.getData());
 
@@ -196,7 +253,165 @@ public class chartWindow {
 
         }
 
+
+
         return charts;
+
+    }
+
+    public static VBox barChartDisp(ArrayList<ColumnData> columnData, ArrayList<ColumnData> numData){
+
+        VBox charts = new VBox();
+
+        for(ColumnData cat: columnData){
+
+            Map distinct = Distinct.getDistinct(cat.getData());
+
+            for(ColumnData num: numData){
+
+                if(distinct.size() == numData.get(0).getData().size()){
+
+                    CategoryAxis xAxis = new CategoryAxis();
+                    NumberAxis yAxis = new NumberAxis();
+
+                    BarChart<String,Number> bc = new BarChart<>(xAxis,yAxis);
+
+                    xAxis.setLabel(cat.getName());
+                    yAxis.setLabel(num.getName());
+
+                    XYChart.Series series = new XYChart.Series();
+
+                    for(int i = 0; i< num.getData().size();i++){
+
+                        String x = cat.getData().get(i).toString();
+                        double y = Statistics.pDouble(num.getData().get(i));
+
+                        series.getData().add(new XYChart.Data(x,y));
+
+                    }
+
+                    bc.getData().add(series);
+
+                    charts.getChildren().add(bc);
+                }
+            }
+        }
+
+        for(ColumnData c: columnData){
+
+            Map distinct = Distinct.getDistinct(c.getData());
+
+             CategoryAxis xAxis = new CategoryAxis();
+             NumberAxis yAxis = new NumberAxis();
+
+            BarChart<String, Number> bc = new BarChart<String, Number>(xAxis,yAxis);
+
+            xAxis.setLabel(c.getName());
+            yAxis.setLabel("Frequency");
+
+            XYChart.Series series1 = new XYChart.Series();
+
+            distinct.forEach((k,v) ->{
+
+                String a = k.toString();
+
+                double b = Double.parseDouble(v.toString());
+
+                series1.getData().add(new XYChart.Data(a,b));
+
+            });
+
+            bc.getData().add(series1);
+
+            charts.getChildren().add(bc);
+        }
+
+
+
+        return charts;
+
+    }
+
+    public static VBox lineChartDisp (ArrayList<ColumnData> numData, ArrayList<ColumnData> catData){
+
+        VBox vBox = new VBox();
+
+        for(ColumnData xA: catData){
+
+            Map distinct = Distinct.getDistinct(xA.getData());
+
+            System.out.println("Distinct: "+distinct.size());
+
+            for(ColumnData yA: numData){
+
+                if(distinct.size() == numData.get(0).getData().size()){
+
+                    System.out.println("Num: "+yA.getData().size());
+
+                    CategoryAxis xAxis = new CategoryAxis();
+                    NumberAxis yAxis = new NumberAxis();
+
+                    xAxis.setLabel(xA.getName());
+                    yAxis.setLabel(yA.getName());
+
+                    LineChart<String,Number> lineChart = new LineChart<>(xAxis,yAxis);
+
+
+                    XYChart.Series series = new XYChart.Series();
+
+                    for(int i = 0; i<xA.getData().size();i++){
+
+                        String x = xA.getData().get(i).toString();
+                        double y = Statistics.pDouble(yA.getData().get(i));
+
+                        series.getData().add(new XYChart.Data(x,y));
+
+                    }
+
+                    lineChart.getData().add(series);
+
+                    vBox.getChildren().add(lineChart);
+
+                }
+
+            }
+
+        }
+
+        for(ColumnData xA: numData){
+
+            for(ColumnData yA: numData){
+
+                 NumberAxis xAxis = new NumberAxis();
+                 NumberAxis yAxis = new NumberAxis();
+
+                 xAxis.setLabel(xA.getName());
+                 yAxis.setLabel(yA.getName());
+
+                LineChart<Number,Number> lineChart = new LineChart<>(xAxis,yAxis);
+
+                XYChart.Series series = new XYChart.Series();
+
+
+
+                for(int i = 0; i<xA.getData().size();i++){
+
+                        double x = Statistics.pDouble(xA.getData().get(i));
+                        double y = Statistics.pDouble(yA.getData().get(i));
+
+                        series.getData().add(new XYChart.Data(x,y));
+
+                }
+
+                lineChart.getData().add(series);
+
+                vBox.getChildren().add(lineChart);
+
+            }
+
+        }
+
+        return vBox;
 
     }
 

@@ -451,35 +451,38 @@ public class Main extends Application{
 
                     //Displays button 1
                     //Adding it to the columnChoice VBox
+                    //--------------------------------------------------------------------------------------------------Display table button
                     displayTable = new Button("Display table");
                     Tooltip disTable = new Tooltip("Click to display selected columns.");
                     displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
 
-                    //Correlation coefficient button
+                    //--------------------------------------------------------------------------------------------------Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
                     correlation.setId(tabID);
                     correlation.setStyle("-fx-background-color: rgb(224, 224, 224)");
                     Tooltip corrF = new Tooltip("Select 2 columns to find their correlation coefficient");
                     correlation.setTooltip(corrF);
 
-                    //ANOVA button
+                    //--------------------------------------------------------------------------------------------------ANOVA button
                     anova = new Button("ANOVA");
+                    anova.setStyle("-fx-background-color: rgb(224, 224, 224)");
+                    Tooltip tAnova = new Tooltip("Select 2 or more columns to calculate the anova");
+                    anova.setTooltip(tAnova);
 
-
-
-
+                    //--------------------------------------------------------------------------------------------------Display charts button
                     chart = new Button("Display charts");
                     chart.setStyle("-fx-background-color: rgb(224, 224, 224)");
                     Tooltip tChart = new Tooltip("Select all the columns you wish to represent on charts");
                     chart.setTooltip(tChart);
 
 
-                    //Make pane scrollable
+                    //--------------------------------------------------------------------------------------------------Make pane scrollable
                     scrollPane = new ScrollPane();
                     scrollPane.setContent(columnChoice);
 
+                    //--------------------------------------------------------------------------------------------------VBox containing the buttons
                     VBox leftButtons = new VBox();
                     leftButtons.setStyle("-fx-background-color: rgb(249, 249, 249)");
                     leftButtons.setPrefHeight(100);
@@ -488,6 +491,8 @@ public class Main extends Application{
                     leftButtons.setPadding(new Insets(10,10,10,10));
                     leftButtons.getChildren().addAll(displayTable,correlation,anova,chart);
 
+                    //--------------------------------------------------------------------------------------------------VBox that is found on the left
+                    //--------------------------------------------------------------------------------------------------contains the checkboxes and buttons
                     VBox leftPanel = new VBox();
                     leftPanel.setMinWidth(200);
                     leftPanel.getChildren().addAll(scrollPane,leftButtons);
@@ -512,15 +517,18 @@ public class Main extends Application{
 
                     });
 
+                    //--------------------------------------------------------------------------------------------------event on clicking the correlation
+                    //--------------------------------------------------------------------------------------------------coefficient button
                     correlation.setOnAction(event2 -> correlationFunction());
 
+                    //--------------------------------------------------------------------------------------------------event for the anova button
                     anova.setOnAction(event -> anovaFunction());
 
+                    //--------------------------------------------------------------------------------------------------event for the display charts button
                     chart.setOnAction(event -> displayChartWindow());
 
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
-
 
                     //adding tab to tabPanes
                     tabPane.getTabs().add(tab);
@@ -615,25 +623,8 @@ public class Main extends Application{
             }
         }*/
 
-        //Testing
-        //for(String s:colsToDisplay){
-            //System.out.println(s);
-        //}
-
 
         readFile(files,tabID,path,data,cData);
-
-            //Testing
-            /*for(DataFile f: files){
-                if(f.getName().equals(tabID)) {
-                    for (ColumnData c : f.getColData()) {
-                        //System.out.println(c.getName());
-                        for (Object o : c.getData()) {
-                            //System.out.println(s);
-                        }
-                    }
-                }
-            }*/
 
             try {
 
@@ -852,22 +843,6 @@ public class Main extends Application{
 
         }
 
-        /*for(DataFile f: files){
-
-            if (f.getName().equals(tabID)) {
-
-                if (f.getColNum() == 0) {
-
-                    //selectedCheckbox(colsToDisplay, files, tabID);
-
-                    readFile(files, tabID, path, data, cData);
-
-                } else {
-
-                }
-
-            }
-        }*/
 
         readFile(files,tabID,path,data,cData);
         
@@ -1008,6 +983,9 @@ public class Main extends Application{
 
     }
 
+    /**
+     * 
+     */
     private void displayChartWindow(){
 
         try {
@@ -1033,36 +1011,6 @@ public class Main extends Application{
                                         "to display the charts.");
 
         }else {
-
-            /*for(DataFile d: files){
-
-                if(d.getName().equals(tabID)){
-
-                    for(String s : chartCols){
-
-                        for(ColumnData c: d.getColData()){
-
-                            if(c.getName().equals(s)){
-
-                                String checkVar = checkVariable.checkVar(c.getData());
-
-                                if(checkVar.equals("String") || checkVar.equals("Char")){
-
-                                    counterString = counterString + 1;
-
-                                }else if(checkVar.equals("Double") || checkVar.equals("Integer")){
-
-                                    counterInt = counterInt + 1;
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }*/
-
-            //System.out.println(counterString);
-            //System.out.println(counterInt);
 
             chartWindow.display(chartCols, files, tabPane);
 

@@ -4,73 +4,93 @@ import java.io.FileReader;
 public class ReadCSV {
 
 
-    public static Object[][] readFile (String filepath) throws Exception
-    {
+    public static Object[][] readFile (String filePath) throws Exception{
 
-        FileReader fr = new FileReader (filepath);
+        FileReader fr = new FileReader (filePath);
         BufferedReader br = new BufferedReader (fr);
 
         Object [][] data = null;
 
-        try
-        {
-            int col=0, row=0;
-            String line = null;
+        try{
 
-            while ((line = br.readLine()) != null)
-            {
+            int col=0, row=0;
+
+            String line = "";
+
+            //get the number of lines and columns in the csv file
+            //to initialise the 2d array
+            while ((line = br.readLine()) != null){
+
+                String [] columns = line.split(",");
+
+                col = columns.length;
+
                 row++;
-                String [] column = line.split(",");
-                col = column.length;
+
             }
 
             int i=0, j=0;
-            data = new Object [row-1][col]; //reason row minus 1 is to exclude the table header
-            br = new BufferedReader (new FileReader (filepath));
+
+            //2d array that will contain the body of the file, excluding the header
+            data = new Object [row-1][col];
+
+            br = new BufferedReader (new FileReader (filePath));
 
             int counterRow = 0;
-            while ((line = br.readLine()) != null)
-            {
-                if(counterRow >0) //consider excluding the table header
-                {
+
+            while ((line = br.readLine()) != null){
+
+                //to excluding the table header
+                if(counterRow > 0){
+
                     String [] column = line.split(",");
 
-                    for (j=0; j<column.length; j++)
-                    {
+                    /*if(column.length != col){
+
+                        alertBox.display("Error","The number of records is not the same" + "\n" +
+                                "as the number of columns." + "\n" +
+                                "Please check your csv file and try again.");
+
+                        break;
+                    }*/
+
+                    for (j=0; j<column.length; j++){
+
                         data [i][j] = column [j];
                     }
+
                     i++;
                 }
-                counterRow++;
-                //i++;
 
+                counterRow++;
             }
 
-
         }
-        catch(Exception E)
-        {
-            System.out.println("+++ReadArrayFile: "+E.getMessage());
+        catch(Exception E){
+
+
         }
 
         return data;
     }
 
-    public static String[] readHeader (String filepath) throws Exception
-    {
+    public static String[] readHeader (String filePath) throws Exception{
+
         String [] header = null;
 
         //String filepath = "Data.csv";
 
-        FileReader fr = new FileReader (filepath);
+        FileReader fr = new FileReader (filePath);
         BufferedReader br = new BufferedReader (fr);
 
 
-        for (int i=0; i<1; i++)
-        {
+        for (int i=0; i<1; i++){
+
             String line = br.readLine();
             header = line.split(",");
+
         }
+
         return header;
     }
 

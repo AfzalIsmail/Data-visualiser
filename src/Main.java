@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -136,6 +137,8 @@ public class Main extends Application{
         saveData.setStyle("-fx-background-color: rgb(68, 69, 71)");
         saveData.setGraphic(saveFileView);
 
+        saveTxtFile(saveData,primaryStage);
+
         //HBox containing the load and save file buttons
         HBox subMenu = addSubMenuBar();
         subMenu.getChildren().addAll(importFile,saveData);
@@ -156,7 +159,7 @@ public class Main extends Application{
 
             System.out.println("Browse file menu item pressed.");
 
-            if(files.size() <= 20) {
+            if(files.size() < 20) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
@@ -168,8 +171,9 @@ public class Main extends Application{
         importFile.setOnAction(e -> {
 
             System.out.println("Import file icon pressed.");
+            System.out.println(files.size());
 
-            if(files.size() <= 20) {
+            if(files.size() < 20) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
@@ -279,7 +283,39 @@ public class Main extends Application{
                     dataFile.setName(selectedFile.getName());
                     dataFile.setPath(selectedFile.getPath());
 
-                    currentPath.add(dataFile);
+                    //currentPath.add(dataFile);
+
+                    /*for(DataFile d: paths) {
+
+                        if (paths.size() == 0) {
+
+                            currentPath.add(dataFile);
+
+                        }else if(paths.size() > 1 && d.getName().equals(dataFile.getName())){
+
+                            alertBox.display("Error","This file has already been imported.");
+
+                        }else{
+
+                            currentPath.add(dataFile);
+                        }
+                    }*/
+
+                    boolean dup = duplicates(paths,dataFile);
+                    System.out.println(dup);
+
+                    if(paths.size() == 0){
+
+                        currentPath.add(dataFile);
+
+                    }else if(paths.size() > 0 && dup){
+
+                        alertBox.display("Error","File has already been imported");
+
+                    }else{
+
+                        currentPath.add(dataFile);
+                    }
 
 
         }catch (Exception e){
@@ -288,6 +324,180 @@ public class Main extends Application{
 
         //System.out.println(dataFile.getName());
         //System.out.println(dataFile.getPath());
+    }
+
+    public boolean duplicates(ArrayList<DataFile> a, DataFile d){
+
+        boolean res = false;
+
+        for(DataFile df:a){
+
+            if(df.getName().equals(d.getName())){
+
+                res = true;
+            }else{
+
+            }
+        }
+
+        return res;
+
+    }
+
+    public void saveTxtFile(Button save, Stage stage){
+
+        save.setOnAction(e ->{
+
+            try {
+                tabID = tabPane.getSelectionModel().getSelectedItem().getId();
+                System.out.println("Tab " + tabID + "is being manipulated by user.");
+            }catch (Exception e2){
+
+            }
+
+            readFile(files,tabID,path,data,cData);
+
+
+            ArrayList<String> saveCols = new ArrayList<>();
+
+            for(String s: saveCols){
+                System.out.println(s);
+            }
+
+            //ArrayList<ColumnData> saveData = new ArrayList<>();
+
+            selectedCheckbox(saveCols, files,tabID);
+
+            ArrayList<String> saveData = new ArrayList<>();
+
+            try{
+
+                for(DataFile f: files){
+
+                    if(f.getName().equals(tabID)){
+
+                        for(String s: saveCols){
+
+                            for(ColumnData c: f.getColData()){
+
+                                if(c.getName().equals(s)){
+
+                                    String saveString = "";
+
+                                    String check = checkVariable.checkVar(c.getData());
+
+                                    if(check.equals("String") || check.equals("Char") || check.equals("Boolean")){
+
+                                        Map distinct = Distinct.getDistinct(c.getData());
+
+                                        int missVal = MissingValues.missingData(c.getData());
+
+                                        ArrayList<String> distinctString = new ArrayList<>();
+
+                                        distinct.forEach((k,v) -> {
+
+                                            String ds = "->" +  k  + "=" +  v  +"\n";
+
+                                            distinctString.add(ds);
+                                        });
+
+                                        if(distinct.size() <= 20){
+
+                                            saveString = "Column name: " + c.getName() + "\n" +
+                                                    "Data type: " + check + "\n" +
+                                                    "Length of data: " + c.getData().size() + "\n" +
+                                                    "No. of missing values: " + missVal + "\n" +
+                                                    "No. of distinct elements: " + distinct.size() + "\n" +
+                                                    "Distinct elements: " + "\n" + distinctString + "\n" + "\n";
+
+                                            saveData.add(saveString);
+                                            System.out.println(saveString);
+
+                                        }else{
+
+                                            saveString = "Column name: " + c.getName() + "\n" +
+                                                    "Data type: " + check + "\n" +
+                                                    "Length of data: " + c.getData().size() + "\n" +
+                                                    "No. of missing values: " + missVal + "\n" +
+                                                    "No. of distinct elements exceed 20!" + "\n" + "\n";
+
+                                            saveData.add(saveString);
+                                            System.out.println(saveString);
+
+                                        }
+
+
+                                    }else if(check.equals("Integer") || check.equals("Double")){
+
+                                        int missVAl = MissingValues.missingData(c.getData());
+                                        double sum = Statistics.getSum(c.getData());
+                                        double mean = Statistics.getMean(c.getData(), sum);
+                                        double variance = Statistics.getVariance(c.getData(), mean);
+                                        double stDeviation = Statistics.getStDeviation(variance);
+                                        double median = Statistics.getMedian(c.getData());
+
+                                        DecimalFormat df = new DecimalFormat(".####");
+
+                                        saveString = "Column name: " + c.getName() + "\n" +
+                                                "Length of data: " + c.getData().size() + "\n" +
+                                                "Sum of data: " + df.format(sum) + "\n" +
+                                                "Min value: " + Statistics.getMin(c.getData()) + "\n" +
+                                                "Max value: " + Statistics.getMax(c.getData()) + "\n" +
+                                                "Mean: " + df.format(mean) + "\n" +
+                                                "Median: " + median + "\n" +
+                                                "Variance: " + df.format(variance) + "\n" +
+                                                "Standard deviation: " + df.format(stDeviation) + "\n" +
+                                                "Missing values: " + missVAl + "\n" + "\n";
+
+                                        saveData.add(saveString);
+                                        System.out.println(saveString);
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+            }catch (Exception e1){
+
+            }
+
+            FileChooser fileChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(stage);
+
+            if(file != null){
+                writeFile(saveData, file);
+            }
+
+        });
+
+
+    }
+
+    public void writeFile(ArrayList<String> s, File file){
+
+        try{
+
+            FileWriter fileWriter = new FileWriter(file);
+
+            for(String st: s){
+                System.out.println(st);
+
+                fileWriter.write(st);
+            }
+            fileWriter.close();
+
+        }catch (IOException e){
+
+        }
+
+
     }
 
     /**
@@ -420,7 +630,7 @@ public class Main extends Application{
 
 
                 //checks that the number of columns in the data set does not exceed 60
-                if (columnNames.length <= 60) {
+                if (columnNames.length <= 60 && columnNames.length >= 2) {
 
                     System.out.println("Column headers displayed.");
 
@@ -564,7 +774,8 @@ public class Main extends Application{
 
                 }else{
                     //display error if dataset contains more than 60 attributes
-                    alertBox.display("Error", "The dataset contains more than 60 attributes");
+                    alertBox.display("Error", "The dataset contains less than 2 "+"\n"
+                                                            +"attributes or more than 60 attributes");
                     logFile.addToLog("Error: The file contains more than 60 attributes");
                     System.out.println("Error: The file chosen contains more than 60 attributes");
                     currentFile.remove(file);

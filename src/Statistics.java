@@ -63,13 +63,13 @@ public class Statistics {
             if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
 
                 //d = 0;
-                System.out.println("One null found");
+                //System.out.println("One null found");
 
             }else {
 
                 double d = Double.parseDouble(o.toString());
 
-                System.out.println(d);
+                //System.out.println(d);
 
                 diff = d - meanM;
 

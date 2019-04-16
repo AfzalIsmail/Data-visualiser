@@ -31,7 +31,7 @@ public class chartWindow {
         }
 
 
-        int counterInt = 0, counterString = 0, counterBool = 0;
+        int counterInt = 0, counterString = 0;
 
         ArrayList<ColumnData> catData = new ArrayList<>();
 
@@ -103,6 +103,12 @@ public class chartWindow {
 
             pieChart.setDisable(false);
             barChart.setDisable(false);
+
+        }if(counterString >= 1 && counterInt >= 1){
+
+            pieChart.setDisable(false);
+            barChart.setDisable(false);
+            lineChart.setDisable(false);
 
         }if(counterInt >= 2){
 
@@ -340,13 +346,13 @@ public class chartWindow {
 
             Map distinct = Distinct.getDistinct(xA.getData());
 
-            System.out.println("Distinct: "+distinct.size());
+            //System.out.println("Distinct: "+distinct.size());
 
             for(ColumnData yA: numData){
 
                 if(distinct.size() == numData.get(0).getData().size()){
 
-                    System.out.println("Num: "+yA.getData().size());
+                    //System.out.println("Num: "+yA.getData().size());
 
                     CategoryAxis xAxis = new CategoryAxis();
                     NumberAxis yAxis = new NumberAxis();
@@ -373,6 +379,49 @@ public class chartWindow {
                     vBox.getChildren().add(lineChart);
 
                 }
+
+            }
+
+        }
+
+        for(ColumnData xA: catData){
+
+            Map distinct = Distinct.getDistinct(xA.getData());
+
+            if (distinct.size() == numData.get(0).getData().size()) {
+
+                //System.out.println("Distinct: "+distinct.size());
+
+                CategoryAxis xAxis = new CategoryAxis();
+                NumberAxis yAxis = new NumberAxis();
+
+                xAxis.setLabel(xA.getName());
+
+                LineChart<String,Number> lineChart = new LineChart<>(xAxis,yAxis);
+
+                for(ColumnData yA: numData) {
+
+                    //System.out.println("Num: " + yA.getData().size());
+
+                    XYChart.Series series = new XYChart.Series();
+
+                    series.setName(yA.getName());
+
+                    for (int i = 0; i < xA.getData().size(); i++) {
+
+                        String x = xA.getData().get(i).toString();
+                        double y = Statistics.pDouble(yA.getData().get(i));
+
+                        series.getData().add(new XYChart.Data(x, y));
+
+                    }
+
+                    lineChart.getData().add(series);
+
+
+                }
+
+                vBox.getChildren().add(lineChart);
 
             }
 

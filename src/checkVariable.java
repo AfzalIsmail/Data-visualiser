@@ -38,7 +38,15 @@ public class checkVariable {
         }
     }
 
-        if(cInt >= 1) {
+        if(cBoolean >= 1) {
+            varType = "Boolean";
+
+        }
+        else if(cString >= 1) {
+            varType = "String";
+            //System.out.println(cString);
+
+        }else if(cInt >= 1) {
             varType = "Integer";
 
         }else if(cDouble >= 1) {
@@ -46,14 +54,6 @@ public class checkVariable {
 
         }else if(cChar >=1) {
             varType = "Char";
-
-        }else if(cBoolean >= 1) {
-            varType = "Boolean";
-
-        }
-        else if(cString >= 1) {
-            varType = "String";
-            //System.out.println(cString);
 
         }else {
             varType = "Not recognised";

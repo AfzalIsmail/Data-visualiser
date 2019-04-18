@@ -1,5 +1,6 @@
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -258,6 +259,7 @@ public class Main extends Application{
             logFile.saveLog();
 
             window.close();
+            Platform.exit();
         }
 
     }

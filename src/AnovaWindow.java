@@ -1,9 +1,11 @@
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.math3.stat.inference.OneWayAnova;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class AnovaWindow {
@@ -24,9 +26,19 @@ public class AnovaWindow {
 
             for(Object o: cd.getData()){
 
-                Double d = Statistics.pDouble(o);
+                double d = 0.0;
 
+                if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
+
+
+
+                }else{
+
+                  d = Statistics.pDouble(o);
+
+                }
                 temp.add(d);
+
 
             }
 
@@ -43,18 +55,20 @@ public class AnovaWindow {
 
         String warning = "";
 
-        for(int i = 0; i < c.get(0).getData().size(); i++){
+        VBox means = new VBox();
 
-            if(i == c.get(0).getData().size()) {
+        for(ColumnData cd: c){
 
-                if (c.get(i).getData().size() != c.get(i + 1).getData().size()) {
 
-                    warning = "The size of the data samples are not " + "\n" +
-                            "the same for all the columns selected." + "\n" +
-                            "The results may not be accurate.";
+            double sum = Statistics.getSum(cd.getData());
+            double mean = Statistics.getMean(cd.getData(),sum);
 
-                }
-            }
+            DecimalFormat df = new DecimalFormat(".####");
+
+            Text m = new Text("Mean for column " + cd.getName() + ": "+ df.format(mean));
+
+            means.getChildren().add(m);
+
         }
 
         OneWayAnova anova = new OneWayAnova();
@@ -66,7 +80,9 @@ public class AnovaWindow {
 
         VBox vBox = new VBox();
 
-        vBox.getChildren().add(anov);
+        vBox.getChildren().addAll(means,anov);
+        vBox.setPadding(new Insets(5,5,5,5));
+        vBox.setSpacing(10);
 
         Scene scene = new Scene(vBox);
 

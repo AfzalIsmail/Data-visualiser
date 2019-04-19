@@ -1,4 +1,3 @@
-import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -7,9 +6,9 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -26,6 +25,7 @@ public class chartWindow {
         try {
             tabID = t.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
+            logFile.addToLog("Chart options for file " + tabID + " is being displayed");
         }catch (Exception e){
 
         }
@@ -104,21 +104,27 @@ public class chartWindow {
             pieChart.setDisable(false);
             barChart.setDisable(false);
 
+            logFile.addToLog("Pie chart and bar chart option available");
+
         }if(counterString >= 1 && counterInt >= 1){
 
             pieChart.setDisable(false);
             barChart.setDisable(false);
             lineChart.setDisable(false);
+            logFile.addToLog("All chart options available");
 
         }if(counterInt >= 2){
 
             lineChart.setDisable(false);
+            logFile.addToLog("Line chart option available");
 
         }else{
 
         }
 
         pieChart.setOnAction(e -> {
+
+            logFile.addToLog("Pie chart button selected");
 
             VBox v = pieChartDisp(catData,numData);
 
@@ -134,6 +140,8 @@ public class chartWindow {
 
         barChart.setOnAction(e -> {
 
+            logFile.addToLog("Bar chart button selected");
+
             VBox v = barChartDisp(catData,numData);
 
             ScrollPane scrollB = new ScrollPane();
@@ -146,6 +154,8 @@ public class chartWindow {
         });
 
         lineChart.setOnAction(e -> {
+
+            logFile.addToLog("Line chart button selected");
 
             VBox v = lineChartDisp(numData,catData);
 
@@ -199,10 +209,27 @@ public class chartWindow {
                         double b = Statistics.pDouble(num.getData().get(i));
 
                         pieChartData.add(new PieChart.Data(a,b));
+
                     }
 
                     PieChart chart = new PieChart(pieChartData);
                     chart.setTitle(num.getName());
+
+                    chart.getData().forEach(data -> {
+
+                            double total = 0;
+
+                            for (PieChart.Data d : chart.getData()) {
+                                total += d.getPieValue();
+                            }
+
+                        String s = String.format("%.2f%%", (100*data.getPieValue()/total));
+                        Tooltip toolTip = new Tooltip(s);
+                        Tooltip.install(data.getNode(), toolTip);
+
+                        System.out.println(data.getPieValue());
+
+                    });
 
                     charts.getChildren().add(chart);
 
@@ -215,31 +242,9 @@ public class chartWindow {
 
             Map distinct = Distinct.getDistinct(c.getData());
 
-            //ArrayList<categoricalChart> catCharts = new ArrayList<>();
-
-            /*distinct.forEach((k,v) -> {
-
-                String a = k.toString();
-                //ks.add(a);
-
-                double b = Double.parseDouble(v.toString());
-                //vs.add(b);
-
-                categoricalChart catChart = new categoricalChart();
-                catChart.setName(a);
-                catChart.setValue(b);
-
-                catCharts.add(catChart);
-
-            });*/
 
             ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(new ArrayList<>());
 
-
-            //for(categoricalChart cChart: catCharts){
-
-                    //pieChartData.add(new PieChart.Data(cChart.getName(),cChart.getValue()));
-            //}
 
             distinct.forEach((k,v) -> {
 
@@ -254,6 +259,24 @@ public class chartWindow {
 
             PieChart chart = new PieChart(pieChartData);
             chart.setTitle(c.getName());
+
+            chart.getData().forEach(data -> {
+
+                double total = 0;
+
+                for (PieChart.Data d : chart.getData()) {
+                    total += d.getPieValue();
+                }
+
+                String s = String.format("%.2f%%", (100*data.getPieValue()/total));
+                Tooltip toolTip = new Tooltip(s);
+                Tooltip.install(data.getNode(), toolTip);
+
+                System.out.println(data.getPieValue());
+
+            });
+
+
 
             charts.getChildren().add(chart);
 
@@ -365,6 +388,8 @@ public class chartWindow {
 
                     XYChart.Series series = new XYChart.Series();
 
+                    series.setName(xA.getName());
+
                     for(int i = 0; i<xA.getData().size();i++){
 
                         String x = xA.getData().get(i).toString();
@@ -441,6 +466,7 @@ public class chartWindow {
 
                 XYChart.Series series = new XYChart.Series();
 
+                series.setName(xA.getName());
 
 
                 for(int i = 0; i<xA.getData().size();i++){

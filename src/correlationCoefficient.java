@@ -10,8 +10,6 @@ import javafx.stage.Stage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import static javafx.scene.paint.Color.rgb;
-
 public class correlationCoefficient {
 
     public static void corrCoefWindow(ColumnData a, ColumnData b) {
@@ -66,8 +64,12 @@ public class correlationCoefficient {
         sumA = Statistics.getSum(a.getData());
         sumB = Statistics.getSum(b.getData());
 
-        meanA = Statistics.getMean(a.getData(),sumA);
-        meanB = Statistics.getMean(b.getData(),sumB);
+        //meanA = Statistics.getMean(a.getData(),sumA);
+        //meanB = Statistics.getMean(b.getData(),sumB);
+
+        meanA = sumA/a.getData().size();
+        meanB = sumB/b.getData().size();
+
 
         DecimalFormat df = new DecimalFormat(".#####");
 

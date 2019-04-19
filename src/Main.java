@@ -1,11 +1,8 @@
-
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -14,17 +11,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -32,45 +31,47 @@ import java.util.Map;
  */
 public class Main extends Application{
 
-    BorderPane borderPane;
+    private BorderPane borderPane;
 
-    MenuBar menuBar;
+    private MenuBar menuBar;
 
-    Menu file, help;
+    private Menu file, help;
 
-    MenuItem browseFile, save, exit,manual;
+    private MenuItem browseFile, save, exit,manual;
 
     private Button displayTable, importFile, saveData, correlation, chart, anova;
+
+    private Button asc, dsc;
 
     private ArrayList<DataFile> currentFile, files = new ArrayList<>();
 
     private ArrayList<String> colNames;
 
-    ArrayList<ColumnData> cData;
+    private ArrayList<ColumnData> cData;
 
-    Object[][] data;
+    private Object[][] data;
 
-    TabPane tabPane;
+    private TabPane tabPane;
 
-    Tab tab;
+    private Tab tab;
 
-    String path = null;
+    private String path = null;
 
-    String[] columnNames = null;
+    private String[] columnNames = null;
 
-    CheckBox columnHeaders;
+    private CheckBox columnHeaders;
 
-    ScrollPane scrollPane;
+    private ScrollPane scrollPane;
 
-    String tabID,tabPath;
+    private String tabID,tabPath;
 
-    ArrayList<CheckBox> checkBoxes;
+    private ArrayList<CheckBox> checkBoxes;
 
-    GridPane dataPane;
+    private GridPane dataPane;
 
-    ScrollPane scrollData;
+    private ScrollPane scrollData;
 
-    Stage window;
+    private Stage window;
 
 
     /**
@@ -138,7 +139,7 @@ public class Main extends Application{
         saveData.setStyle("-fx-background-color: rgb(68, 69, 71)");
         saveData.setGraphic(saveFileView);
 
-        saveTxtFile(saveData,primaryStage);
+        //saveTxtFile(saveData,primaryStage);
 
         //HBox containing the load and save file buttons
         HBox subMenu = addSubMenuBar();
@@ -180,6 +181,29 @@ public class Main extends Application{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
                 System.out.println("File limit of 20 reached.");
             }
+        });
+
+        //------------------------------------------------
+        save.setOnAction(e ->{
+
+            saveTxtFile(primaryStage);
+        });
+
+        //------------------------------------------------
+        saveData.setOnAction(e ->{
+
+            saveTxtFile(primaryStage);
+
+        });
+
+        exit.setOnAction(e ->{
+
+            try {
+                closeProgram();
+            }catch (IOException ioE){
+
+            }
+
         });
 
         //Testing log messages
@@ -251,10 +275,14 @@ public class Main extends Application{
      */
     private void closeProgram() throws IOException {
 
+        logFile.addToLog("Program close request");
+
         boolean answer = confirmBox.display("Close request", "Are you sure you want to exit" + "\n" +
                                                                                 "the program?");
 
         if(answer){
+
+            logFile.addToLog("Program closed");
 
             logFile.saveLog();
 
@@ -268,7 +296,7 @@ public class Main extends Application{
      * Function to open file browser and store the name and path of each file in an arraylist
      * @param stage
      */
-    public void fileBrowser(Stage stage, ArrayList<DataFile> currentPath, ArrayList<DataFile> paths){
+    private void fileBrowser(Stage stage, ArrayList<DataFile> currentPath, ArrayList<DataFile> paths){
 
         try {
 
@@ -328,7 +356,7 @@ public class Main extends Application{
         //System.out.println(dataFile.getPath());
     }
 
-    public boolean duplicates(ArrayList<DataFile> a, DataFile d){
+    private boolean duplicates(ArrayList<DataFile> a, DataFile d){
 
         boolean res = false;
 
@@ -346,13 +374,15 @@ public class Main extends Application{
 
     }
 
-    public void saveTxtFile(Button save, Stage stage){
+    private void saveTxtFile(/*Button save,*/ Stage stage){
 
-        save.setOnAction(e ->{
+        //save.setOnAction(e ->{
 
             try {
                 tabID = tabPane.getSelectionModel().getSelectedItem().getId();
                 System.out.println("Tab " + tabID + "is being manipulated by user.");
+                logFile.addToLog("Save button is selected for file: " + tabID);
+
             }catch (Exception e2){
 
             }
@@ -378,11 +408,15 @@ public class Main extends Application{
 
                     if(f.getName().equals(tabID)){
 
+                        logFile.addToLog("Columns selected for saving: ");
+
                         for(String s: saveCols){
 
                             for(ColumnData c: f.getColData()){
 
                                 if(c.getName().equals(s)){
+
+                                    logFile.addToLog("- " + c.getName());
 
                                     String saveString = "";
 
@@ -477,12 +511,12 @@ public class Main extends Application{
                 writeFile(saveData, file);
             }
 
-        });
+        //});
 
 
     }
 
-    public void writeFile(ArrayList<String> s, File file){
+    private void writeFile(ArrayList<String> s, File file){
 
         try{
 
@@ -507,7 +541,7 @@ public class Main extends Application{
      * the choiceBox consists of the headers of each column that the user can select to be displayed
      * @return vbox
      */
-    public VBox addVBox(){
+    private VBox addVBox(){
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(8);
@@ -526,7 +560,7 @@ public class Main extends Application{
      *The Vbox for the header area that will contain the logo, menu and submenu
      * @return
      */
-    public VBox headerArea(){
+    private VBox headerArea(){
 
         VBox vBox = new VBox();
 
@@ -537,7 +571,7 @@ public class Main extends Application{
      * Creating HBoxes that can will place all the other layouts in the tabs horizontally
      * @return hBox
      */
-    public HBox addHBox(){
+    private HBox addHBox(){
         HBox hBox = new HBox();
 
         return hBox;
@@ -669,6 +703,21 @@ public class Main extends Application{
                     displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
+                    asc = new Button("Sort asc");
+                    Tooltip disAsc = new Tooltip("Click to sort in ascending order the selected coloumns");
+                    asc.setTooltip(disAsc);
+                    asc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
+
+                    dsc = new Button("Sort dsc");
+                    Tooltip disDsc = new Tooltip("Click to sort in ascending order the selected coloumns");
+                    dsc.setTooltip(disDsc);
+                    dsc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
+
+
+                    HBox sortButtons = new HBox();
+                    sortButtons.setSpacing(5);
+                    sortButtons.getChildren().addAll(asc,dsc);
+
 
                     //--------------------------------------------------------------------------------------------------Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
@@ -701,7 +750,7 @@ public class Main extends Application{
                     leftButtons.setPrefWidth(200);
                     leftButtons.setSpacing(10);
                     leftButtons.setPadding(new Insets(10,10,10,10));
-                    leftButtons.getChildren().addAll(displayTable,correlation,anova,chart);
+                    leftButtons.getChildren().addAll(displayTable,sortButtons,correlation,anova,chart);
 
                     //--------------------------------------------------------------------------------------------------VBox that is found on the left
                     //--------------------------------------------------------------------------------------------------contains the checkboxes and buttons
@@ -723,21 +772,48 @@ public class Main extends Application{
                     displayTable.setOnAction(event1 -> {
 
                         System.out.println("Display table button pressed.");
+                        logFile.addToLog("Display table function is pressed");
 
                         //calling displayTableFunction function
-                        displayTableFunction(tabContent, grids, scrollGrids);
+                        displayTableFunction("n",tabContent, grids, scrollGrids);
 
                     });
 
                     //--------------------------------------------------------------------------------------------------event on clicking the correlation
                     //--------------------------------------------------------------------------------------------------coefficient button
-                    correlation.setOnAction(event2 -> correlationFunction());
+                    correlation.setOnAction(event2 -> {
+
+                        logFile.addToLog("Correlation coefficient button is pressed");
+                        correlationFunction();
+                    });
 
                     //--------------------------------------------------------------------------------------------------event for the anova button
-                    anova.setOnAction(event -> anovaFunction());
+                    anova.setOnAction(event -> {
+
+                        logFile.addToLog("Anova button is pressed");
+                        anovaFunction();
+                    });
 
                     //--------------------------------------------------------------------------------------------------event for the display charts button
-                    chart.setOnAction(event -> displayChartWindow());
+                    chart.setOnAction(event -> {
+
+                        logFile.addToLog("Chart button is pressed");
+                        displayChartWindow();
+                    });
+
+                    asc.setOnAction(e -> {
+
+                        logFile.addToLog("Sort ascending button is pressed");
+                        displayTableFunction("a",tabContent,grids,scrollGrids);
+
+                    });
+
+                    dsc.setOnAction(e -> {
+
+                        logFile.addToLog("Sort descending button is pressed");
+                        displayTableFunction("d",tabContent,grids,scrollGrids);
+
+                    });
 
                     //setting the content of the tab to the choice of columns
                     tab.setContent(tabContent);
@@ -755,6 +831,7 @@ public class Main extends Application{
                                     for (DataFile f : files) {
                                         if (f.getName().equals(t.getId())) {
                                             System.out.println("File " + f.getName() + "is closed.");
+                                            logFile.addToLog("File " + f.getName() + " is closed");
                                             files.remove(f);
                                         } else {
 
@@ -774,10 +851,16 @@ public class Main extends Application{
                     //so that the tabpane does not duplicate the tabs
                     currentFile.remove(file);
 
-                }else{
+                }else if(columnNames.length < 2){
                     //display error if dataset contains more than 60 attributes
-                    alertBox.display("Error", "The dataset contains less than 2 "+"\n"
-                                                            +"attributes or more than 60 attributes");
+                    alertBox.display("Error", "The dataset contains less than 2 attributes");
+                    logFile.addToLog("Error: The file contains less than 2 attributes");
+                    System.out.println("Error: The file chosen contains more than 60 attributes");
+                    currentFile.remove(file);
+
+                }else if(columnNames.length > 60){
+
+                    alertBox.display("Error", "The dataset contains more than 60 attributes");
                     logFile.addToLog("Error: The file contains more than 60 attributes");
                     System.out.println("Error: The file chosen contains more than 60 attributes");
                     currentFile.remove(file);
@@ -796,7 +879,7 @@ public class Main extends Application{
     /**
      * Function that will display the data columns and their respective statistics once the display table button is pressed
      */
-    public void displayTableFunction(HBox tabcontent, HBox hGrid, ScrollPane scrollHGrid){
+    private void displayTableFunction(String type,HBox tabcontent, HBox hGrid, ScrollPane scrollHGrid){
 
         //HBox grids = grids();
 
@@ -811,31 +894,13 @@ public class Main extends Application{
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
+            logFile.addToLog("Tab " + tabID + "is being manipulated by user.");
+
         }catch (Exception e){
 
         }
 
         selectedCheckbox(colsToDisplay,files,tabID);
-
-
-        //check if the data arraylist is empty, if it is the program will read the body of the csv file
-        /*for(DataFile f: files){
-
-            if (f.getName().equals(tabID)) {
-
-                if (f.getColNum() == 0) {
-
-                    //selectedCheckbox(colsToDisplay, files, tabID);
-
-                    readFile(files, tabID, path, data, cData);
-
-                } else {
-
-                }
-
-            }
-        }*/
-
 
         readFile(files,tabID,path,data,cData);
 
@@ -851,6 +916,7 @@ public class Main extends Application{
                         for (String s : colsToDisplay) {
 
                             System.out.println("Column selected: " + s);
+                            logFile.addToLog("Column selected: " + s);
 
                             dataPane = new GridPane();    //creating a new gridpane for each column selected
 
@@ -860,161 +926,89 @@ public class Main extends Application{
                                 //Check which column was selected by the user and display these tables
                                 if (c.getName().equals(s)) {
 
-                                    //Make the area containing the data columns scrollable
-                                    scrollData = new ScrollPane();
+                                    VBox dataColumn = stats(c);
 
-                                    //vbox that will contain the data values
-                                    VBox dataColumn = dataCol();
-
-                                    //vbox that that will contain the column header
-                                    VBox header = new VBox();
-                                    header.setPrefWidth(180);
-                                    header.setPrefHeight(25);
-                                    Text colName = new Text(c.getName());
-
-                                    colName.setFont(Font.font("arial", FontWeight.BOLD, FontPosture.REGULAR, 16));
-                                    header.getChildren().add(colName);
-                                    header.setAlignment(Pos.CENTER);
-
-                                    //---------------------------------------------------------------------------------------------
-                                    Text displayType = new Text();
-
-                                    //sortAsc = new Button("Asc");
-                                    //sortDsc= new Button("Dsc");
-                                    //reset = new Button("Rset");
-
-                                    //HBox buttons = new HBox();
-                                    //buttons.getChildren().addAll(sortAsc,sortDsc,reset);
-
-                                    //header.getChildren().add(buttons);
-                                    //--------------------------------------------------------------------------------------------
-
-                                    //adding the column header to the first top grid of the grid pane
-                                    dataPane.add(header, 0, 0);
-
-                                    //check the data type of the values in this particular data column
                                     String check = checkVariable.checkVar(c.getData());
 
-                                    //System.out.println(check);
+                                    if(check.equals("Integer") || check.equals("Double")) {
 
-                                    //if the data column is a string or char type
-                                    //display length, distinct and frequency and missinf values
-                                    if (check.equals("String") || check.equals("Char") || check.equals("Boolean")) {
-                                        Map distinct = Distinct.getDistinct(c.getData());
-                                        //System.out.println("Length of data : " + c.getData().size());
-                                        //System.out.println("Final distinct elements : " + distinct);
-                                        //System.out.println("No of elements : " + distinct.size());
+                                        if (type.equals("a")) {
 
-                                        int missVal = MissingValues.missingData(c.getData());
+                                            ArrayList<Double> doubles = numericalSorting.sortAsc(c.getData());
 
-                                        Text distinctText;
+                                            for (Double d : doubles) {
 
-                                        VBox distinctBox = new VBox();
-                                        distinctBox.setStyle("-fx-background-color: rgb(247, 247, 247)");
+                                                Text dataRow = new Text(d.toString());
 
-                                            distinct.forEach((k, v) -> {
-                                                
-                                                Text t = new Text("->" + k + " = " + v);
+                                                dataColumn.getChildren().add(dataRow);
+                                            }
+                                        } else if (type.equals("d")) {
 
-                                                distinctBox.getChildren().add(t);
+                                            ArrayList<Double> doubles = numericalSorting.sortDesc(c.getData());
 
-                                            });
+                                            for (Double d : doubles) {
 
-                                            VBox allDistinct = new VBox();
+                                                Text dataRow = new Text(d.toString());
 
+                                                dataColumn.getChildren().add(dataRow);
+                                            }
 
+                                        }else if(type.equals("n")) {
+                                            for (Object o : c.getData()) {
 
-                                        //check if the number of distinct values is not over 20
-                                        //otherwise it will not be displayed
-                                        if (distinct.size() <= 20) {
+                                                //System.out.println(st);
 
-                                            distinctText = new Text("Data type: " + check + "\n" +
-                                                    "Length of data: " + c.getData().size() + "\n" +
-                                                    "No of missing values: " + missVal + "\n" +
-                                                    "No of elements: " + distinct.size() + "\n" +
-                                                    "Distinct elements: ");
+                                                Text dataRow = new Text(o.toString());
 
-                                            allDistinct.getChildren().addAll(distinctText,distinctBox);
+                                                //adding each data value to the vbox dataColumn
+                                                dataColumn.getChildren().add(dataRow);
 
-                                            displayStats(allDistinct, dataPane);
-
-                                        } else {
-                                            distinctText = new Text("Data type: " + check + "\n" +
-                                                    "Length of data: " + c.getData().size() + "\n" +
-                                                    "No of missing values: " + missVal + "\n" +
-                                                    "Number of distinct " + "\n" +
-                                                    "elements exceed 20!");
-
-                                            allDistinct.getChildren().addAll(distinctText);
-
-                                            displayStats(allDistinct, dataPane);
+                                            }
 
                                         }
 
-                                        //adding the stats to be displayed in a vbox in the 3rd grid of the datapane
+                                    }else if(check.equals("String") || check.equals("Char") || check.equals("Boolean")){
 
+                                        if(type.equals("a")){
 
-                                        //display stats if data type id int or double
-                                    } else if (check.equals("Integer") || check.equals("Double")) {
+                                            ArrayList<String> strings = numericalSorting.catSortAsc(c.getData());
 
-                                        //calling stats functions
-                                        int missVal = MissingValues.missingData(c.getData());
-                                        double sum = Statistics.getSum(c.getData());
-                                        double mean = Statistics.getMean(c.getData(), sum);
-                                        double variance = Statistics.getVariance((c.getData()), mean);
-                                        double stDeviation = Statistics.getStDeviation(variance);
-                                        double median = Statistics.getMedian(c.getData());
+                                            for(String st: strings){
 
-                                        //-------------------------------------------------------------------------------sorting
-                                        //ArrayList<Double> sortA =  numericalSorting.sortAsc(c.getData());
-                                        //System.out.println(sortA);
+                                                Text dataRow = new Text(st);
 
-                                        //ArrayList<Double> sortD = numericalSorting.sortDesc(c.getData());
-                                        //System.out.println(sortD);
+                                                dataColumn.getChildren().add(dataRow);
 
+                                            }
+                                        }else if(type.equals("d")){
 
-                                        DecimalFormat df = new DecimalFormat(".####");
+                                            ArrayList<String> strings = numericalSorting.catSortDcs(c.getData());
 
-                                        //System.out.println(sum);
-                                        //System.out.println(mean);
-                                        //System.out.println(variance);
-                                        //System.out.println(stDeviation);
+                                            for(String st: strings){
 
-                                        VBox allDouble = new VBox();
+                                                Text dataRow = new Text(st);
 
-                                        Text doubleText = new Text("Data type: " + check + "\n" +
-                                                "Length of data: " + c.getData().size() + "\n" +
-                                                "Sum of data: " + df.format(sum) + "\n" +
-                                                "Min value: " + Statistics.getMin(c.getData()) + "\n" +
-                                                "Max value: " + Statistics.getMax(c.getData()) + "\n" +
-                                                "Mean: " + df.format(mean) + "\n" +
-                                                "Median: " + median + "\n" +
-                                                "Variance: " + df.format(variance) + "\n" +
-                                                "Std. dev: " + df.format(stDeviation) + "\n" +
-                                                "Missing values: " + missVal);
+                                                dataColumn.getChildren().add(dataRow);
 
-                                        doubleText.setFont(Font.font("Source sans pro", 13));
+                                            }
 
-                                        allDouble.getChildren().addAll(doubleText);
+                                        }else if(type.equals("n")) {
 
+                                            for (Object o : c.getData()) {
 
-                                        displayStats(allDouble, dataPane);
+                                                //System.out.println(st);
+
+                                                Text dataRow = new Text(o.toString());
+
+                                                //adding each data value to the vbox dataColumn
+                                                dataColumn.getChildren().add(dataRow);
+
+                                            }
+
+                                        }
 
                                     }
 
-                                    //System.out.println(c.getName());
-
-                                    //getting all the data values in the column and displaying them
-                                    for (Object o : c.getData()) {
-
-                                        //System.out.println(st);
-
-                                        Text dataRow =  new Text(o.toString());
-
-                                        //adding each data value to the vbox dataColumn
-                                        dataColumn.getChildren().add(dataRow);
-
-                                    }
                                     //adding the vbox dataColumn to scrollData to make it scrollable
                                     scrollData.setContent(dataColumn);
 
@@ -1044,6 +1038,140 @@ public class Main extends Application{
 
     }
 
+    private VBox stats(ColumnData c){
+
+            //Make the area containing the data columns scrollable
+            scrollData = new ScrollPane();
+
+            //vbox that will contain the data values
+            VBox dataColumn = dataCol();
+
+            //vbox that that will contain the column header
+            VBox header = new VBox();
+            header.setPrefWidth(180);
+            header.setPrefHeight(25);
+            Text colName = new Text(c.getName());
+
+            colName.setFont(Font.font("arial", FontWeight.BOLD, FontPosture.REGULAR, 16));
+            header.getChildren().add(colName);
+            header.setAlignment(Pos.CENTER);
+
+
+            //adding the column header to the first top grid of the grid pane
+            dataPane.add(header, 0, 0);
+
+            //check the data type of the values in this particular data column
+            String check = checkVariable.checkVar(c.getData());
+
+            //System.out.println(check);
+
+            //if the data column is a string or char type
+            //display length, distinct and frequency and missinf values
+            if (check.equals("String") || check.equals("Char") || check.equals("Boolean")) {
+                Map distinct = Distinct.getDistinct(c.getData());
+
+                int missVal = MissingValues.missingData(c.getData());
+
+                Text distinctText;
+
+                VBox distinctBox = new VBox();
+                distinctBox.setStyle("-fx-background-color: rgb(247, 247, 247)");
+
+                distinct.forEach((k, v) -> {
+
+                    Text t = new Text("->" + k + " = " + v);
+
+                    distinctBox.getChildren().add(t);
+
+                });
+
+                VBox allDistinct = new VBox();
+
+
+                //check if the number of distinct values is not over 20
+                //otherwise it will not be displayed
+                if (distinct.size() <= 20) {
+
+                    distinctText = new Text("Data type: " + check + "\n" +
+                            "Length of data: " + c.getData().size() + "\n" +
+                            "No of missing values: " + missVal + "\n" +
+                            "No of elements: " + distinct.size() + "\n" +
+                            "Distinct elements: ");
+
+                    allDistinct.getChildren().addAll(distinctText, distinctBox);
+
+                    displayStats(allDistinct, dataPane);
+
+                } else {
+                    distinctText = new Text("Data type: " + check + "\n" +
+                            "Length of data: " + c.getData().size() + "\n" +
+                            "No of missing values: " + missVal + "\n" +
+                            "Number of distinct " + "\n" +
+                            "elements exceed 20!");
+
+                    allDistinct.getChildren().addAll(distinctText);
+
+                    displayStats(allDistinct, dataPane);
+
+                }
+
+                //adding the stats to be displayed in a vbox in the 3rd grid of the datapane
+
+
+                //display stats if data type id int or double
+            } else if (check.equals("Integer") || check.equals("Double")) {
+
+                //calling stats functions
+                int missVal = MissingValues.missingData(c.getData());
+                double sum = Statistics.getSum(c.getData());
+                double mean = Statistics.getMean(c.getData(), sum);
+                double variance = Statistics.getVariance((c.getData()), mean);
+                double stDeviation = Statistics.getStDeviation(variance);
+                double median = Statistics.getMedian(c.getData());
+
+                DecimalFormat df = new DecimalFormat(".####");
+
+
+                VBox allDouble = new VBox();
+
+                Text doubleText = new Text("Data type: " + check + "\n" +
+                        "Length of data: " + c.getData().size() + "\n" +
+                        "Sum of data: " + df.format(sum) + "\n" +
+                        "Min value: " + Statistics.getMin(c.getData()) + "\n" +
+                        "Max value: " + Statistics.getMax(c.getData()) + "\n" +
+                        "Mean: " + df.format(mean) + "\n" +
+                        "Median: " + median + "\n" +
+                        "Variance: " + df.format(variance) + "\n" +
+                        "Std. dev: " + df.format(stDeviation) + "\n" +
+                        "Missing values: " + missVal);
+
+                doubleText.setFont(Font.font("Source sans pro", 13));
+
+
+                if(missVal >= 1){
+
+                    Text warning = new Text("The statistical values displayed" + "\n" +
+                                            "do not include missing values!");
+                    warning.setFill(Color.rgb(244, 36, 29));
+
+                    allDouble.getChildren().addAll( warning,doubleText);
+
+                }else {
+
+                    allDouble.getChildren().addAll(doubleText);
+                }
+
+
+                displayStats(allDouble, dataPane);
+
+            }
+
+
+
+        return dataColumn;
+
+    }
+
     /**
      * 
      */
@@ -1052,6 +1180,7 @@ public class Main extends Application{
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
+            logFile.addToLog("Tab " + tabID + "is being manipulated by user.");
         }catch (Exception e){
 
         }
@@ -1070,10 +1199,12 @@ public class Main extends Application{
         if(corrCols.size() > 2){
 
             alertBox.display("Error","Please select only 2 columns to get their correlation coefficient");
+            logFile.addToLog("Error: More than 2 columns were selected for correlation coefficient");
 
         }else if(corrCols.size() < 2){
 
             alertBox.display("Error","Please select 2 columns to get their correlation coefficient");
+            logFile.addToLog("Error: Less than 2 columns were selected for correlation coefficient");
 
         }else if(corrCols.size() == 2){
 
@@ -1098,8 +1229,10 @@ public class Main extends Application{
                                 }else{
 
                                     alertBox.display("Error","One or more of the selected " + "\n" +
-                                            "column(s) contains an unsuitable data type " + "\n" +
+                                            "column(s) contain(s) an unsuitable data type " + "\n" +
                                             "for correlation coefficient");
+                                    logFile.addToLog("Error: One or more of the selected column9s0 contain(s) an unsuitable data type");
+
                                 }
                             }
                         }
@@ -1114,6 +1247,7 @@ public class Main extends Application{
             try {
 
                 correlationCoefficient.corrCoefWindow(corrData.get(0), corrData.get(1));
+                logFile.addToLog("Correlation coefficient between "+corrData.get(0).getName() + " and " +corrData.get(1).getName());
 
             }catch (Exception e){
 
@@ -1133,6 +1267,8 @@ public class Main extends Application{
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
+            logFile.addToLog("Tab " + tabID + " is being manipulated by user");
+
         }catch (Exception e){
 
         }
@@ -1147,6 +1283,7 @@ public class Main extends Application{
 
         if(anovaCols.size() < 2){
             alertBox.display("Error","Please select at least 2 columns to get the anova");
+            logFile.addToLog("Error: Less than 2 columns were selected to calculate the anova");
 
         }else {
 
@@ -1155,6 +1292,8 @@ public class Main extends Application{
                 //Searches for the file that matches the tab ID
                 if (f.getName().equals(tabID)) {
 
+                    logFile.addToLog("Columns selected to get the anova:");
+
                     for (String s : anovaCols) {
 
                         //for all the columns in the data file
@@ -1162,6 +1301,9 @@ public class Main extends Application{
 
                             //Check which column was selected by the user and display these tables
                             if (c.getName().equals(s)) {
+
+                                logFile.addToLog("- " + c.getName());
+
                                 String check = checkVariable.checkVar(c.getData());
 
                                 if (check.equals("Integer") || check.equals("Double")) {
@@ -1190,9 +1332,9 @@ public class Main extends Application{
 
         }
 
-        for(ColumnData c: anovaData){
-            System.out.println(c.getName());
-        }
+        //for(ColumnData c: anovaData){
+            //System.out.println(c.getName());
+        //}
 
     }
 
@@ -1204,6 +1346,7 @@ public class Main extends Application{
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
+            logFile.addToLog("Tab " + tabID + " is being manipulated by user");
         }catch (Exception e){
 
         }
@@ -1224,6 +1367,8 @@ public class Main extends Application{
                                         "to display the charts.");
 
         }else {
+
+            logFile.addToLog("Chart window displayed");
 
             chartWindow.display(chartCols, files, tabPane);
 

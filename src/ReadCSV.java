@@ -17,6 +17,8 @@ public class ReadCSV {
 
             String line = "";
 
+
+
             //get the number of lines and columns in the csv file
             //to initialise the 2d array
             while ((line = br.readLine()) != null){
@@ -42,6 +44,7 @@ public class ReadCSV {
 
                 //to excluding the table header
                 if(counterRow > 0){
+
 
                     String [] column = line.split(",");
 
@@ -87,11 +90,13 @@ public class ReadCSV {
         for (int i=0; i<1; i++){
 
             String line = br.readLine();
+
             header = line.split(",");
 
         }
 
         return header;
     }
+
 
 }

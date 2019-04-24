@@ -12,6 +12,12 @@ import java.util.ArrayList;
 
 public class correlationCoefficient {
 
+    /**
+     * window that will give the correlation coefficient between two numerical column data
+     * and a scatter chart to show their relationship
+     * @param a first column
+     * @param b second column
+     */
     public static void corrCoefWindow(ColumnData a, ColumnData b) {
 
         double sumA = 0, sumB = 0;
@@ -27,17 +33,10 @@ public class correlationCoefficient {
 
         ArrayList<Double> bDouble = new ArrayList<>();
 
+        //converting the objects in both arraylist to double
         for(Object o : a.getData()){
+
             double d = 0;
-
-            /*if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
-
-                d = 0;
-
-            }else {
-
-                d = Double.parseDouble(o.toString());
-            }*/
 
             d = Statistics.pDouble(o);
 
@@ -45,45 +44,38 @@ public class correlationCoefficient {
         }
 
         for(Object o : b.getData()){
+
             double d = 0;
-
-            /*if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
-
-                d = 0;
-
-            }else {
-
-                d = Double.parseDouble(o.toString());
-            }*/
 
             d = Statistics.pDouble(o);
 
             bDouble.add(d);
         }
 
+        //getting the sums of both columns
         sumA = Statistics.getSum(a.getData());
         sumB = Statistics.getSum(b.getData());
 
         //meanA = Statistics.getMean(a.getData(),sumA);
         //meanB = Statistics.getMean(b.getData(),sumB);
 
+        //getting the mean of both columns, including missing values
         meanA = sumA/a.getData().size();
         meanB = sumB/b.getData().size();
 
-
-        DecimalFormat df = new DecimalFormat(".#####");
+        DecimalFormat df = new DecimalFormat("0.#####");
 
         Text t1 = new Text("Number of records = " + a.getData().size() + "\n" +
                         "∑X = " + df.format(sumA) + "\n" +
                         "∑Y = " + df.format(sumB) + "\n" +
-                        "Mx = " + df.format(meanA) + "\n" +
-                        "My = " + df.format(meanB));
+                        "Mean x = " + df.format(meanA) + "\n" +
+                        "Mean y = " + df.format(meanB));
 
         Text t2 = getCoefficient(aDouble,bDouble,meanA,meanB);
 
         //Text t = new Text(coefficient.toString());
 
-        //------------------------------------------------------------------------code for graph
+        //------------------------------------------------------------------------code for scatter chart to show the relationship between the two columns
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         ScatterChart<Number,Number> sc = new ScatterChart<>(xAxis,yAxis);
@@ -107,14 +99,20 @@ public class correlationCoefficient {
 
         Scene scene = new Scene(vbox);
 
-        scene.getStylesheets().add("scatterChart.css");
-
         window.setScene(scene);
         window.show();
 
 
     }
 
+    /**
+     * method to calculate the correlation coefficient between the two columns
+     * @param a first arraylist
+     * @param b second arraylist
+     * @param meanA mean of first arraylist
+     * @param meanB mean of second arraylist
+     * @return Text that contains the correlation coefficient as well as an explanation of the calculation
+     */
     public static Text getCoefficient(ArrayList<Double> a, ArrayList<Double> b, double meanA, double meanB){
 
         int sizeA = 0, sizeB = 0;
@@ -131,8 +129,10 @@ public class correlationCoefficient {
         if(sizeA != sizeB){
 
             alertBox.display("Error", "Size of both columns not the same.");
+
         }else{
 
+            //calculating the coefficient
             for(int i = 0; i < sizeA ; i++){
 
                 aM = a.get(i) - meanA;
@@ -165,15 +165,14 @@ public class correlationCoefficient {
 
         DecimalFormat df = new DecimalFormat("0.#####");
 
-        Text t = new Text("∑(X - Mx)2 = " + df.format(sumAMSq) + "\n" +
-                          "∑(Y - My)2 = " + df.format(sumBMSq) + "\n" +
-                          "∑(X - Mx)(Y - My) = " + df.format(sumAB) + "\n" + "\n" +
-                            "r = ∑((X - My)(Y - Mx)) / √((SSx)(SSy))" + "\n" + "\n" +
+        Text t = new Text("∑(X - Mean x)2 = " + df.format(sumAMSq) + "\n" +
+                          "∑(Y - Mean y)2 = " + df.format(sumBMSq) + "\n" +
+                          "∑(X - Mean x)(Y - Mean y) = " + df.format(sumAB) + "\n" + "\n" +
+                            "r = ∑((X - Mean y)(Y - Mean x)) / √((SSx)(SSy))" + "\n" + "\n" +
                           "r = " + df.format(corr));
 
         return t;
 
     }
 
-    
 }

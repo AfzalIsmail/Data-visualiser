@@ -1,9 +1,19 @@
+/**
+ * @author Afzal Ismail
+ * @version 1.0
+ */
 import java.io.BufferedReader;
 import java.io.FileReader;
 
 public class ReadCSV {
 
-
+    /**
+     * function to read the body of a csv file and store it in a 2d array
+     * without storing the first line, which containd the header
+     * @param filePath path of csv file
+     * @return data[][] containing the data
+     * @throws Exception if file cannot be read
+     */
     public static Object[][] readFile (String filePath) throws Exception{
 
         FileReader fr = new FileReader (filePath);
@@ -16,7 +26,6 @@ public class ReadCSV {
             int col=0, row=0;
 
             String line = "";
-
 
 
             //get the number of lines and columns in the csv file
@@ -77,6 +86,12 @@ public class ReadCSV {
         return data;
     }
 
+    /**
+     * function to read only the column headers in a csv file, by reading only the first line
+     * @param filePath path of file
+     * @return array containing the header names
+     * @throws Exception if file cannot be read
+     */
     public static String[] readHeader (String filePath) throws Exception{
 
         String [] header = null;

@@ -1,13 +1,23 @@
+/**
+ * @author Afzal Ismail
+ * @version 2.0
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class numericalSorting {
 
+    /**
+     * function to sort numerical values in ascending order
+     * @param a arraylist of object
+     * @return arraylist in ascending order
+     */
     public static ArrayList<Double> sortAsc(ArrayList<Object> a) {
 
         ArrayList<Double> arrayList = new ArrayList<>();
 
-
+            //convert each object to double
             for (Object o : a) {
 
                 double d = Statistics.pDouble(o);
@@ -16,25 +26,35 @@ public class numericalSorting {
 
             }
 
+            //sort arraylist
             Collections.sort(arrayList);
-
 
         return arrayList;
 
-
         }
 
-        public static ArrayList<Double> sortDesc (ArrayList < Object > a) {
+    /**
+     * sort arraylist in descending order
+     * @param a arraylist of object
+     * @return arraylist in descending order
+     */
+    public static ArrayList<Double> sortDesc (ArrayList < Object > a) {
 
             ArrayList<Double> arrayList = sortAsc(a);
 
+            //reverse the order of the arraylist
             Collections.reverse(arrayList);
 
             return arrayList;
 
-        }
+    }
 
-        public static ArrayList<String> catSortAsc(ArrayList<Object> a){
+    /**
+     * function to sort non-numerical data in ascending order
+     * @param a arraylist of object
+     * @return arraylist sorted in ascending order
+     */
+    public static ArrayList<String> catSortAsc(ArrayList<Object> a){
 
         ArrayList<String> arrayList = new ArrayList<>();
 
@@ -49,16 +69,22 @@ public class numericalSorting {
 
         return  arrayList;
 
-        }
+    }
 
-        public static ArrayList<String> catSortDcs(ArrayList<Object> a){
+    /**
+     * function to sort non-numerical data in descending order
+     * @param a arraylist of object
+     * @return arraylist sorted in descending order
+     */
+    public static ArrayList<String> catSortDcs(ArrayList<Object> a){
 
         ArrayList<String> arrayList = catSortAsc(a);
 
         Collections.reverse(arrayList);
 
         return arrayList;
-        }
+
+    }
 
 
 

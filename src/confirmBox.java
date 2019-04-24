@@ -1,3 +1,8 @@
+/**
+ * @author Afzal Ismail
+ * @version 1.0
+ */
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +17,12 @@ public class confirmBox {
 
     static boolean answer;
 
+    /**
+     * displays a confirmation window when the main window is requested to close
+     * @param title of the window
+     * @param message body of the window
+     * @return true if "yes" button id pressed or false if "no" is pressed
+     */
     public static boolean display(String title, String message){
 
         Stage window = new Stage();

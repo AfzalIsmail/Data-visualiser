@@ -1,3 +1,8 @@
+/**
+ * @author Afzal Ismail
+ * @version 1.0
+ */
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -8,8 +13,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+
 public class alertBox {
 
+    /**
+     * Function to display a new window that will contain the error message
+     * @param title - error title
+     * @param message - explanation of the error
+     */
     public static void display(String title, String message){
 
         Stage window = new Stage();
@@ -34,6 +45,7 @@ public class alertBox {
         warningView.setFitWidth(50);
 
         Button closeButton = new Button("Ok");
+        closeButton.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
         closeButton.setOnAction(e -> window.close());
 

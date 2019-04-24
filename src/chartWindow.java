@@ -1,3 +1,8 @@
+/**
+ * @author Afzal Ismail
+ * @version 2.0
+ */
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -18,10 +23,17 @@ import java.util.Map;
 
 public class chartWindow {
 
+    /**
+     * Function that will display a new window containing the buttons for every charts
+     * @param cols selected columns from main window
+     * @param dFiles arraylist of all dataFiles that are currently open
+     * @param t all the tabpanes present in the main window
+     */
     public static void display(ArrayList<String> cols, ArrayList<DataFile> dFiles, TabPane t){
 
         String tabID = "";
 
+        //determine which tab is currently displayed
         try {
             tabID = t.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
@@ -30,11 +42,13 @@ public class chartWindow {
 
         }
 
-
+        //counter for each data type present in the selected columns
         int counterInt = 0, counterString = 0;
 
+        //will contain all columns that have categorical data types
         ArrayList<ColumnData> catData = new ArrayList<>();
 
+        //will contain all columns that have numerical data types
         ArrayList<ColumnData> numData = new ArrayList<>();
 
         Stage chartWindow = new Stage();
@@ -43,6 +57,7 @@ public class chartWindow {
         chartWindow.setMinHeight(200);
         chartWindow.setMinWidth(350);
 
+        //----------------------------------------------------------------button for line chart
         Button lineChart = new Button();
         Image lChart = new Image("picture/lineChart.png");
         ImageView lChartView = new ImageView(lChart);
@@ -51,6 +66,7 @@ public class chartWindow {
         lineChart.setGraphic(lChartView);
         lineChart.setDisable(true);
 
+        //---------------------------------------------------------------- button for pie chart
         Button pieChart = new Button();
         Image pChart = new Image("picture/pieChart.png");
         ImageView pChartView = new ImageView(pChart);
@@ -59,6 +75,7 @@ public class chartWindow {
         pieChart.setGraphic(pChartView);
         pieChart.setDisable(true);
 
+        //----------------------------------------------------------------- button for barchart
         Button barChart = new Button();
         Image bChart = new Image("picture/barChart.png");
         ImageView bChartView = new ImageView(bChart);
@@ -81,13 +98,16 @@ public class chartWindow {
 
                                 String checkVar = checkVariable.checkVar(c.getData());
 
+                                //increse counterString by 1 each time checkVar detects a categorical data type
                                 if (checkVar.equals("String") || checkVar.equals("Char") || checkVar.equals("Boolean")) {
 
                                     counterString = counterString + 1;
 
                                     catData.add(c);
 
-                                } else if (checkVar.equals("Double") || checkVar.equals("Integer")) {
+
+                                }//increse counterInt by 1 each time checkVar detects a numerical data type
+                                else if (checkVar.equals("Double") || checkVar.equals("Integer")) {
 
                                     counterInt = counterInt + 1;
 
@@ -99,6 +119,7 @@ public class chartWindow {
                 }
             }
 
+         //sets the button(s) clickable depending on the type of data present
         if(counterString >= 1){
 
             pieChart.setDisable(false);
@@ -122,6 +143,7 @@ public class chartWindow {
 
         }
 
+        //pieChart button action
         pieChart.setOnAction(e -> {
 
             logFile.addToLog("Pie chart button selected");
@@ -137,7 +159,7 @@ public class chartWindow {
             chartWindow.setScene(secondaryScene);
         });
 
-
+        //barChart button action
         barChart.setOnAction(e -> {
 
             logFile.addToLog("Bar chart button selected");
@@ -153,6 +175,7 @@ public class chartWindow {
             chartWindow.setScene(secondaryScene);
         });
 
+        //lineChart button action
         lineChart.setOnAction(e -> {
 
             logFile.addToLog("Line chart button selected");
@@ -189,10 +212,19 @@ public class chartWindow {
 
     }
 
+    /**
+     * method to display all the possible piecharts from the data selected
+     * @param catData arraylist of categorical data
+     * @param numData arraylist of numerical data
+     * @return vbox containing all the possible piecharts
+     */
     public static VBox pieChartDisp(ArrayList<ColumnData> catData, ArrayList<ColumnData> numData){
 
+        //vbox that will contain all the charts
         VBox charts = new VBox();
 
+        //create a piechart if the number of categorical data is the same as the number of numerical data
+        //which might be concluded that each numerical data has a direct relationship to the corresponding categorical data
         for(ColumnData cat: catData){
 
             Map distinct = Distinct.getDistinct(cat.getData());
@@ -219,15 +251,17 @@ public class chartWindow {
 
                             double total = 0;
 
-                            for (PieChart.Data d : chart.getData()) {
+                            /*for (PieChart.Data d : chart.getData()) {
                                 total += d.getPieValue();
-                            }
+                            }*/
+
+                            total = Statistics.getSum(num.getData());
 
                         String s = String.format("%.2f%%", (100*data.getPieValue()/total));
                         Tooltip toolTip = new Tooltip(s);
                         Tooltip.install(data.getNode(), toolTip);
 
-                        System.out.println(data.getPieValue());
+                        //System.out.println(data.getPieValue());
 
                     });
 
@@ -238,6 +272,7 @@ public class chartWindow {
 
         }
 
+        //create a pie chart for distinct frequency of each categorical data present
         for(ColumnData c: catData){
 
             Map distinct = Distinct.getDistinct(c.getData());
@@ -245,7 +280,7 @@ public class chartWindow {
 
             ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(new ArrayList<>());
 
-
+            //getting the pie chart data from the hashmap
             distinct.forEach((k,v) -> {
 
                 String a = k.toString();
@@ -258,40 +293,41 @@ public class chartWindow {
 
 
             PieChart chart = new PieChart(pieChartData);
-            chart.setTitle(c.getName());
+            chart.setTitle("Frequency: "+c.getName());
 
+            //displaying the percentage for each slice when hovering with the cursor
             chart.getData().forEach(data -> {
 
-                double total = 0;
-
-                for (PieChart.Data d : chart.getData()) {
-                    total += d.getPieValue();
-                }
+                double total = c.getData().size();
 
                 String s = String.format("%.2f%%", (100*data.getPieValue()/total));
                 Tooltip toolTip = new Tooltip(s);
                 Tooltip.install(data.getNode(), toolTip);
 
-                System.out.println(data.getPieValue());
+                //System.out.println(data.getPieValue());
 
             });
-
-
 
             charts.getChildren().add(chart);
 
         }
 
-
-
         return charts;
 
     }
 
+    /**
+     * method to display all the possible bar charts from selected columns
+     * @param columnData arraylist containing all categorical data
+     * @param numData arraylist containing all numerical data
+     * @return vbox that will contain all bar charts
+     */
     public static VBox barChartDisp(ArrayList<ColumnData> columnData, ArrayList<ColumnData> numData){
 
+        //vbox that will contain all charts
         VBox charts = new VBox();
 
+        //bar chart created if distinct frequency is equal to number of numerical data
         for(ColumnData cat: columnData){
 
             Map distinct = Distinct.getDistinct(cat.getData());
@@ -326,6 +362,7 @@ public class chartWindow {
             }
         }
 
+        //bar chart created to show the frequency of categorical data
         for(ColumnData c: columnData){
 
             Map distinct = Distinct.getDistinct(c.getData());
@@ -350,21 +387,28 @@ public class chartWindow {
 
             });
 
+            series1.setName("Frequency: " + c.getName());
+
             bc.getData().add(series1);
 
             charts.getChildren().add(bc);
         }
 
-
-
         return charts;
 
     }
 
+    /**
+     * method to display line charts possible
+     * @param numData arraylist containing all numerical data
+     * @param catData arraylist containing all categorical data
+     * @return vbox with all the line charts
+     */
     public static VBox lineChartDisp (ArrayList<ColumnData> numData, ArrayList<ColumnData> catData){
 
         VBox vBox = new VBox();
 
+        //line chart created if number of distinct values is equal to the number of numerical data
         for(ColumnData xA: catData){
 
             Map distinct = Distinct.getDistinct(xA.getData());
@@ -409,6 +453,7 @@ public class chartWindow {
 
         }
 
+        //create a line chart to compare all the line charts with same set of categorical data but different numerical data
         for(ColumnData xA: catData){
 
             Map distinct = Distinct.getDistinct(xA.getData());
@@ -452,6 +497,7 @@ public class chartWindow {
 
         }
 
+        //create line chart for each pair of numerical data present
         for(ColumnData xA: numData){
 
             for(ColumnData yA: numData){

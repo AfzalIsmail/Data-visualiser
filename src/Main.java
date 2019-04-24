@@ -1,3 +1,7 @@
+/**
+ * @author Afzal Ismail
+ * @version
+ */
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -26,9 +30,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- *
- */
 public class Main extends Application{
 
     private BorderPane borderPane;
@@ -75,7 +76,7 @@ public class Main extends Application{
 
 
     /**
-     *
+     * main function
      * @param args
      */
     public static void main ( String[] args){
@@ -84,7 +85,7 @@ public class Main extends Application{
     }
 
     /**
-     *
+     * function that will display the main window once the program is launched
      * @param primaryStage
      */
     @Override
@@ -151,7 +152,7 @@ public class Main extends Application{
 
         //Menu items for help tab
         exit = new MenuItem("Exit");
-        manual = new MenuItem("Help");
+        manual = new MenuItem("Manual");
 
         //tabpane
         tabPane = new TabPane();
@@ -159,43 +160,45 @@ public class Main extends Application{
         //opens the file browser and saves each file selected in an arraylist
         browseFile.setOnAction(e -> {
 
-            System.out.println("Browse file menu item pressed.");
+            //System.out.println("Browse file menu item pressed.");
 
             if(files.size() < 20) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
-                System.out.println("File limit of 20 reached.");
+                //System.out.println("File limit of 20 reached.");
             }
 
         });
 
+        //import file icon action when pressed
         importFile.setOnAction(e -> {
 
-            System.out.println("Import file icon pressed.");
-            System.out.println(files.size());
+            //System.out.println("Import file icon pressed.");
+            //System.out.println(files.size());
 
             if(files.size() < 20) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
-                System.out.println("File limit of 20 reached.");
+                //System.out.println("File limit of 20 reached.");
             }
         });
 
-        //------------------------------------------------
+        //------------------------------------------------calls the saveTxtFile function when the menu item is pressed
         save.setOnAction(e ->{
 
             saveTxtFile(primaryStage);
         });
 
-        //------------------------------------------------
+        //------------------------------------------------calls the saveTxtFile function when the save item is pressed
         saveData.setOnAction(e ->{
 
             saveTxtFile(primaryStage);
 
         });
 
+        //------------------------------------------------calls the close program function when the exit menu is pressed
         exit.setOnAction(e ->{
 
             try {
@@ -203,6 +206,14 @@ public class Main extends Application{
             }catch (IOException ioE){
 
             }
+
+        });
+
+        //------------------------------------------------calls the manual window to appear
+        manual.setOnAction(e ->{
+
+            logFile.addToLog("Manual window opened");
+            manualWindow.manWindow();
 
         });
 
@@ -247,8 +258,8 @@ public class Main extends Application{
         Scene scene = new Scene(borderPane, 1400, 750);
         //scene.getStylesheets().add("styleSheet.css");
 
-
-            window.setOnCloseRequest(e -> {
+        //calls the close close program function when the window is requested to close
+        window.setOnCloseRequest(e -> {
                 e.consume();
 
                 try {
@@ -257,7 +268,7 @@ public class Main extends Application{
 
             }
 
-            });
+        });
 
 
         window.getIcons().add(logo);
@@ -270,7 +281,8 @@ public class Main extends Application{
     }
 
     /**
-     *
+     * function that will be called when the program is requested to be closed
+     * if the answer is true, it will save the log files
      * @throws IOException
      */
     private void closeProgram() throws IOException {
@@ -294,7 +306,7 @@ public class Main extends Application{
 
     /**
      * Function to open file browser and store the name and path of each file in an arraylist
-     * @param stage
+     * @param stage the stage in which the file browser should be opened
      */
     private void fileBrowser(Stage stage, ArrayList<DataFile> currentPath, ArrayList<DataFile> paths){
 
@@ -331,13 +343,16 @@ public class Main extends Application{
                         }
                     }*/
 
+                    //checks for duplicate files if already opened
                     boolean dup = duplicates(paths,dataFile);
-                    System.out.println(dup);
+                    //System.out.println(dup);
 
+                    //add the file to the arraylist if the list is empty
                     if(paths.size() == 0){
 
                         currentPath.add(dataFile);
 
+                    //check for duplicates before adding
                     }else if(paths.size() > 0 && dup){
 
                         alertBox.display("Error","File has already been imported");
@@ -356,6 +371,12 @@ public class Main extends Application{
         //System.out.println(dataFile.getPath());
     }
 
+    /**
+     * check for duplicates in the opened files arraylist
+     * @param a list of datafiles imported
+     * @param d file that needs to be checked
+     * @return true if duplicate found or else false
+     */
     private boolean duplicates(ArrayList<DataFile> a, DataFile d){
 
         boolean res = false;
@@ -374,10 +395,15 @@ public class Main extends Application{
 
     }
 
+    /**
+     * save function that will save the statistical data for the selected columns in a text file
+     * @param stage - which window the file saver will be opened
+     */
     private void saveTxtFile(/*Button save,*/ Stage stage){
 
         //save.setOnAction(e ->{
 
+        //determine which tab is opened
             try {
                 tabID = tabPane.getSelectionModel().getSelectedItem().getId();
                 System.out.println("Tab " + tabID + "is being manipulated by user.");
@@ -387,29 +413,34 @@ public class Main extends Application{
 
             }
 
+            //get the data from the file
             readFile(files,tabID,path,data,cData);
 
-
+            //arraylist that will contain the column names for which the datd will be saved
             ArrayList<String> saveCols = new ArrayList<>();
 
-            for(String s: saveCols){
-                System.out.println(s);
-            }
+            //for(String s: saveCols){
+                //System.out.println(s);
+            //}
 
             //ArrayList<ColumnData> saveData = new ArrayList<>();
 
+        //get the selected checkboxes
             selectedCheckbox(saveCols, files,tabID);
 
+            //arraylist that will contain the statistical information for a particular column
             ArrayList<String> saveData = new ArrayList<>();
 
             try{
 
+                //check which tab is being manipulated by user
                 for(DataFile f: files){
 
                     if(f.getName().equals(tabID)){
 
                         logFile.addToLog("Columns selected for saving: ");
 
+                        //check which column(s) were selected by the user
                         for(String s: saveCols){
 
                             for(ColumnData c: f.getColData()){
@@ -420,13 +451,15 @@ public class Main extends Application{
 
                                     String saveString = "";
 
+                                    //check thr data type
                                     String check = checkVariable.checkVar(c.getData());
 
+                                    //statistical data to be save for categorical data
                                     if(check.equals("String") || check.equals("Char") || check.equals("Boolean")){
 
                                         Map distinct = Distinct.getDistinct(c.getData());
 
-                                        int missVal = MissingValues.missingData(c.getData());
+                                        int missVal = Statistics.missingData(c.getData());
 
                                         ArrayList<String> distinctString = new ArrayList<>();
 
@@ -462,10 +495,10 @@ public class Main extends Application{
 
                                         }
 
-
+                                    //statistical data to be saved for numerical data
                                     }else if(check.equals("Integer") || check.equals("Double")){
 
-                                        int missVAl = MissingValues.missingData(c.getData());
+                                        int missVAl = Statistics.missingData(c.getData());
                                         double sum = Statistics.getSum(c.getData());
                                         double mean = Statistics.getMean(c.getData(), sum);
                                         double variance = Statistics.getVariance(c.getData(), mean);
@@ -500,11 +533,13 @@ public class Main extends Application{
 
             }
 
+            //opening the file chooser
             FileChooser fileChooser = new FileChooser();
 
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
 
+            //allows the user to save the file with a custom name and in a specific location on the internal or an external hardrive
             File file = fileChooser.showSaveDialog(stage);
 
             if(file != null){
@@ -516,6 +551,11 @@ public class Main extends Application{
 
     }
 
+    /**
+     * function to write the content of a string arraylist to a text file
+     * @param s arraylist of string
+     * @param file file that will contain the strings
+     */
     private void writeFile(ArrayList<String> s, File file){
 
         try{
@@ -703,21 +743,22 @@ public class Main extends Application{
                     displayTable.setTooltip(disTable);
                     displayTable.setStyle("-fx-background-color: rgb( 51, 170, 168)");
 
+                    //--------------------------------------------------------------------------------------------------sort in ascending order button
                     asc = new Button("Sort asc");
                     Tooltip disAsc = new Tooltip("Click to sort in ascending order the selected coloumns");
                     asc.setTooltip(disAsc);
                     asc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
 
+                    //--------------------------------------------------------------------------------------------------sort in descending order button
                     dsc = new Button("Sort dsc");
                     Tooltip disDsc = new Tooltip("Click to sort in ascending order the selected coloumns");
                     dsc.setTooltip(disDsc);
                     dsc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
 
-
+                    //--------------------------------------------------------------------------------------------------hbox that contains the sort buttons
                     HBox sortButtons = new HBox();
                     sortButtons.setSpacing(5);
                     sortButtons.getChildren().addAll(asc,dsc);
-
 
                     //--------------------------------------------------------------------------------------------------Correlation coefficient button
                     correlation = new Button("Correlation coefficient");
@@ -801,6 +842,7 @@ public class Main extends Application{
                         displayChartWindow();
                     });
 
+                    //--------------------------------------------------------------------------------------------------action when sort ascending button is pressed
                     asc.setOnAction(e -> {
 
                         logFile.addToLog("Sort ascending button is pressed");
@@ -808,6 +850,7 @@ public class Main extends Application{
 
                     });
 
+                    //--------------------------------------------------------------------------------------------------action when sort descending is pressed
                     dsc.setOnAction(e -> {
 
                         logFile.addToLog("Sort descending button is pressed");
@@ -851,6 +894,7 @@ public class Main extends Application{
                     //so that the tabpane does not duplicate the tabs
                     currentFile.remove(file);
 
+                //if the data file imported has less than 2 or more than 60 columns an error pop up will be displayed
                 }else if(columnNames.length < 2){
                     //display error if dataset contains more than 60 attributes
                     alertBox.display("Error", "The dataset contains less than 2 attributes");
@@ -877,7 +921,12 @@ public class Main extends Application{
     }
 
     /**
-     * Function that will display the data columns and their respective statistics once the display table button is pressed
+     * function that will display the data for each selected column name in its own column along with the required
+     * statistical information
+     * @param type - "n" is to display table normally, "a" is to display table in ascending order, "d" is to display in descending order
+     * @param tabcontent - hbox that will contain all the data columns
+     * @param hGrid - gridpane that will contain, for each column, the name, the data and the statistical information
+     * @param scrollHGrid - make the whole hbox with the data columns scrollable
      */
     private void displayTableFunction(String type,HBox tabcontent, HBox hGrid, ScrollPane scrollHGrid){
 
@@ -930,8 +979,10 @@ public class Main extends Application{
 
                                     String check = checkVariable.checkVar(c.getData());
 
+                                    //check the data type
                                     if(check.equals("Integer") || check.equals("Double")) {
 
+                                        //sort in ascending order
                                         if (type.equals("a")) {
 
                                             ArrayList<Double> doubles = numericalSorting.sortAsc(c.getData());
@@ -942,6 +993,7 @@ public class Main extends Application{
 
                                                 dataColumn.getChildren().add(dataRow);
                                             }
+                                        //sort in descending order
                                         } else if (type.equals("d")) {
 
                                             ArrayList<Double> doubles = numericalSorting.sortDesc(c.getData());
@@ -1038,6 +1090,11 @@ public class Main extends Application{
 
     }
 
+    /**
+     * function that will give the statistical information for each data column
+     * @param c data column
+     * @return vbox for the data column
+     */
     private VBox stats(ColumnData c){
 
             //Make the area containing the data columns scrollable
@@ -1070,7 +1127,7 @@ public class Main extends Application{
             if (check.equals("String") || check.equals("Char") || check.equals("Boolean")) {
                 Map distinct = Distinct.getDistinct(c.getData());
 
-                int missVal = MissingValues.missingData(c.getData());
+                int missVal = Statistics.missingData(c.getData());
 
                 Text distinctText;
 
@@ -1122,18 +1179,19 @@ public class Main extends Application{
             } else if (check.equals("Integer") || check.equals("Double")) {
 
                 //calling stats functions
-                int missVal = MissingValues.missingData(c.getData());
+                int missVal = Statistics.missingData(c.getData());
                 double sum = Statistics.getSum(c.getData());
                 double mean = Statistics.getMean(c.getData(), sum);
                 double variance = Statistics.getVariance((c.getData()), mean);
                 double stDeviation = Statistics.getStDeviation(variance);
                 double median = Statistics.getMedian(c.getData());
 
-                DecimalFormat df = new DecimalFormat(".####");
+                DecimalFormat df = new DecimalFormat("0.####");
 
 
                 VBox allDouble = new VBox();
 
+                //text that will be displayed
                 Text doubleText = new Text("Data type: " + check + "\n" +
                         "Length of data: " + c.getData().size() + "\n" +
                         "Sum of data: " + df.format(sum) + "\n" +
@@ -1147,7 +1205,8 @@ public class Main extends Application{
 
                 doubleText.setFont(Font.font("Source sans pro", 13));
 
-
+                //display a warning if there are/is missing value(s) in the data set
+                //informing thr=e user that these are noy taken into consideration when getting the statistical values
                 if(missVal >= 1){
 
                     Text warning = new Text("The statistical values displayed" + "\n" +
@@ -1166,17 +1225,16 @@ public class Main extends Application{
 
             }
 
-
-
         return dataColumn;
 
     }
 
     /**
-     * 
+     * window that pop up containing the correlation coefficient for the two numerical column selected
      */
     private void correlationFunction(){
 
+        // get the current tab which is opened
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
             System.out.println("Tab " + tabID + "is being manipulated by user.");
@@ -1185,17 +1243,20 @@ public class Main extends Application{
 
         }
 
-
+        //get the data from the file
         readFile(files,tabID,path,data,cData);
-        
 
+        //arraylist containing the column name that are selected by user
         ArrayList<String> corrCols = new ArrayList<>();
 
+        //arraylist that will conatining the two column data
         ArrayList<ColumnData> corrData = new ArrayList<>();
 
-
+        //get which checkbox is selected
         selectedCheckbox(corrCols, files,tabID);
 
+        //checking how many columns were selected
+        //only two allowed
         if(corrCols.size() > 2){
 
             alertBox.display("Error","Please select only 2 columns to get their correlation coefficient");
@@ -1208,6 +1269,7 @@ public class Main extends Application{
 
         }else if(corrCols.size() == 2){
 
+            //checking whether the two columns selected contain the appropriate data type required to calculate the correlation coefficient
             for(DataFile f: files){
 
                 //Searches for the file that matches the tab ID
@@ -1240,10 +1302,11 @@ public class Main extends Application{
                 }
             }
 
-            for(ColumnData c:corrData){
-                System.out.println(c.getName());
-            }
+            //for(ColumnData c:corrData){
+                //System.out.println(c.getName());
+            //}
 
+            //parsing the data columns to the correlationCoefficient window
             try {
 
                 correlationCoefficient.corrCoefWindow(corrData.get(0), corrData.get(1));
@@ -1260,7 +1323,7 @@ public class Main extends Application{
     }
 
     /**
-     *
+     * function to calculate the analysis of variance for two or more numerical columns
      */
     private void anovaFunction(){
 
@@ -1281,6 +1344,7 @@ public class Main extends Application{
 
         selectedCheckbox(anovaCols, files,tabID);
 
+        //there should be more than one selected column in order to calculate the anova
         if(anovaCols.size() < 2){
             alertBox.display("Error","Please select at least 2 columns to get the anova");
             logFile.addToLog("Error: Less than 2 columns were selected to calculate the anova");
@@ -1304,6 +1368,7 @@ public class Main extends Application{
 
                                 logFile.addToLog("- " + c.getName());
 
+                                //checking if the appropriate data type were selected
                                 String check = checkVariable.checkVar(c.getData());
 
                                 if (check.equals("Integer") || check.equals("Double")) {
@@ -1326,6 +1391,7 @@ public class Main extends Application{
 
         try {
 
+            //display anova window
             AnovaWindow.anovaWindow(anovaData);
 
         }catch (Exception e){
@@ -1339,7 +1405,7 @@ public class Main extends Application{
     }
 
     /**
-     * 
+     * function to display the charts window
      */
     private void displayChartWindow(){
 
@@ -1356,10 +1422,6 @@ public class Main extends Application{
         readFile(files,tabID,path,data,cData);
 
         selectedCheckbox(chartCols, files,tabID);
-
-        int counterInt = 0, counterString = 0, counterBool = 0;
-
-        //ArrayList<ColumnData> chartData = new ArrayList<>();
 
         if(chartCols.size() < 1){
 
@@ -1423,10 +1485,10 @@ public class Main extends Application{
     }
 
     /**
-     *
-     * @param s
-     * @param dF
-     * @param id
+     * function to get the checkboxes selected in a particular tab
+     * @param s arraylist that will contain the names of the columns selected
+     * @param dF arraylist of all the data files imported
+     * @param id of the current tab opened
      */
     private static void selectedCheckbox(ArrayList<String> s, ArrayList<DataFile> dF, String id){
 
@@ -1451,12 +1513,12 @@ public class Main extends Application{
     }
 
     /**
-     *
-     * @param dfX
-     * @param idX
-     * @param pathX
-     * @param oX
-     * @param cdX
+     * function to get the data in the body of the csv file imported
+     * @param dfX arraylist of datafiles imported
+     * @param idX id of the opened tab
+     * @param pathX path of the data file
+     * @param oX 2d array that will contain the data in the body of the csv file
+     * @param cdX arraylist that will be set as the arraylist of column data for a particular data file
      */
     private static void readFile(ArrayList<DataFile> dfX, String idX, String pathX, Object[][] oX, ArrayList<ColumnData> cdX) {
 
@@ -1489,8 +1551,8 @@ public class Main extends Application{
             cdX = new ArrayList<>();
 
 
+            //for each column in oX[][]
             for (int i = 0; i < numCol; i = i + 1) {
-
 
                 columnData = new ColumnData();
 
@@ -1499,10 +1561,12 @@ public class Main extends Application{
 
                 a = new ArrayList<>();
 
+                //for each row in oX[][]
                 for (int j = 0; j < numRow; j = j + 1) {
 
                     Object s = oX[j][i];
 
+                    //check if a record is null and replace it with a space " "
                     if (s == null || s.toString().equals(null) || s.toString().length() == 0) {
 
                         a.add(" ");

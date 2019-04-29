@@ -74,6 +74,8 @@ public class Main extends Application{
 
     private Stage window;
 
+    private final int maxDistinct = 20, minCol = 2, maxCols = 60, maxFileNum = 20;
+
 
     /**
      * main function
@@ -162,7 +164,7 @@ public class Main extends Application{
 
             //System.out.println("Browse file menu item pressed.");
 
-            if(files.size() < 20) {
+            if(files.size() < maxFileNum) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
@@ -177,7 +179,7 @@ public class Main extends Application{
             //System.out.println("Import file icon pressed.");
             //System.out.println(files.size());
 
-            if(files.size() < 20) {
+            if(files.size() < maxFileNum) {
                 displayHeaders(window);
             }else{
                 alertBox.display("Max number of imported files reached","The program can only import up to 20 files.");
@@ -325,24 +327,6 @@ public class Main extends Application{
                     dataFile.setName(selectedFile.getName());
                     dataFile.setPath(selectedFile.getPath());
 
-                    //currentPath.add(dataFile);
-
-                    /*for(DataFile d: paths) {
-
-                        if (paths.size() == 0) {
-
-                            currentPath.add(dataFile);
-
-                        }else if(paths.size() > 1 && d.getName().equals(dataFile.getName())){
-
-                            alertBox.display("Error","This file has already been imported.");
-
-                        }else{
-
-                            currentPath.add(dataFile);
-                        }
-                    }*/
-
                     //checks for duplicate files if already opened
                     boolean dup = duplicates(paths,dataFile);
                     //System.out.println(dup);
@@ -364,7 +348,8 @@ public class Main extends Application{
 
 
         }catch (Exception e){
-            System.out.println("No file chosen.");
+            //System.out.println("No file chosen.");
+            logFile.addToLog("No file chosen.");
         }
 
         //System.out.println(dataFile.getName());
@@ -399,14 +384,12 @@ public class Main extends Application{
      * save function that will save the statistical data for the selected columns in a text file
      * @param stage - which window the file saver will be opened
      */
-    private void saveTxtFile(/*Button save,*/ Stage stage){
-
-        //save.setOnAction(e ->{
+    private void saveTxtFile(Stage stage){
 
         //determine which tab is opened
             try {
                 tabID = tabPane.getSelectionModel().getSelectedItem().getId();
-                System.out.println("Tab " + tabID + "is being manipulated by user.");
+                //System.out.println("Tab " + tabID + "is being manipulated by user.");
                 logFile.addToLog("Save button is selected for file: " + tabID);
 
             }catch (Exception e2){
@@ -418,12 +401,6 @@ public class Main extends Application{
 
             //arraylist that will contain the column names for which the datd will be saved
             ArrayList<String> saveCols = new ArrayList<>();
-
-            //for(String s: saveCols){
-                //System.out.println(s);
-            //}
-
-            //ArrayList<ColumnData> saveData = new ArrayList<>();
 
         //get the selected checkboxes
             selectedCheckbox(saveCols, files,tabID);
@@ -470,7 +447,7 @@ public class Main extends Application{
                                             distinctString.add(ds);
                                         });
 
-                                        if(distinct.size() <= 20){
+                                        if(distinct.size() <= maxDistinct){
 
                                             saveString = "Column name: " + c.getName() + "\n" +
                                                     "Data type: " + check + "\n" +
@@ -480,7 +457,7 @@ public class Main extends Application{
                                                     "Distinct elements: " + "\n" + distinctString + "\n" + "\n";
 
                                             saveData.add(saveString);
-                                            System.out.println(saveString);
+                                            //System.out.println(saveString);
 
                                         }else{
 
@@ -491,7 +468,7 @@ public class Main extends Application{
                                                     "No. of distinct elements exceed 20!" + "\n" + "\n";
 
                                             saveData.add(saveString);
-                                            System.out.println(saveString);
+                                            //System.out.println(saveString);
 
                                         }
 
@@ -519,7 +496,7 @@ public class Main extends Application{
                                                 "Missing values: " + missVAl + "\n" + "\n";
 
                                         saveData.add(saveString);
-                                        System.out.println(saveString);
+                                        //System.out.println(saveString);
 
                                     }
                                 }
@@ -542,11 +519,13 @@ public class Main extends Application{
             //allows the user to save the file with a custom name and in a specific location on the internal or an external hardrive
             File file = fileChooser.showSaveDialog(stage);
 
+            logFile.addToLog("File saved to: " + file.getPath());
+
+            //System.out.println(file.getPath());
+
             if(file != null){
                 writeFile(saveData, file);
             }
-
-        //});
 
 
     }
@@ -563,7 +542,7 @@ public class Main extends Application{
             FileWriter fileWriter = new FileWriter(file);
 
             for(String st: s){
-                System.out.println(st);
+                //System.out.println(st);
 
                 fileWriter.write(st);
             }
@@ -745,13 +724,13 @@ public class Main extends Application{
 
                     //--------------------------------------------------------------------------------------------------sort in ascending order button
                     asc = new Button("Sort asc");
-                    Tooltip disAsc = new Tooltip("Click to sort in ascending order the selected coloumns");
+                    Tooltip disAsc = new Tooltip("Click to sort in ascending order the selected columns");
                     asc.setTooltip(disAsc);
                     asc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
 
                     //--------------------------------------------------------------------------------------------------sort in descending order button
                     dsc = new Button("Sort dsc");
-                    Tooltip disDsc = new Tooltip("Click to sort in ascending order the selected coloumns");
+                    Tooltip disDsc = new Tooltip("Click to sort in descending order the selected columns");
                     dsc.setTooltip(disDsc);
                     dsc.setStyle("-fx-background-color: rgb( 156, 216, 213)");
 
@@ -895,18 +874,18 @@ public class Main extends Application{
                     currentFile.remove(file);
 
                 //if the data file imported has less than 2 or more than 60 columns an error pop up will be displayed
-                }else if(columnNames.length < 2){
+                }else if(columnNames.length < minCol){
                     //display error if dataset contains more than 60 attributes
                     alertBox.display("Error", "The dataset contains less than 2 attributes");
                     logFile.addToLog("Error: The file contains less than 2 attributes");
-                    System.out.println("Error: The file chosen contains more than 60 attributes");
+                    //System.out.println("Error: The file chosen contains more than 60 attributes");
                     currentFile.remove(file);
 
-                }else if(columnNames.length > 60){
+                }else if(columnNames.length > maxCols){
 
                     alertBox.display("Error", "The dataset contains more than 60 attributes");
                     logFile.addToLog("Error: The file contains more than 60 attributes");
-                    System.out.println("Error: The file chosen contains more than 60 attributes");
+                    //System.out.println("Error: The file chosen contains more than 60 attributes");
                     currentFile.remove(file);
 
                 }
@@ -942,7 +921,7 @@ public class Main extends Application{
         //Get the ID of the currently viewed tab
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
-            System.out.println("Tab " + tabID + "is being manipulated by user.");
+            //System.out.println("Tab " + tabID + "is being manipulated by user.");
             logFile.addToLog("Tab " + tabID + "is being manipulated by user.");
 
         }catch (Exception e){
@@ -964,7 +943,7 @@ public class Main extends Application{
                         //For all the columns selected by the user
                         for (String s : colsToDisplay) {
 
-                            System.out.println("Column selected: " + s);
+                            //System.out.println("Column selected: " + s);
                             logFile.addToLog("Column selected: " + s);
 
                             dataPane = new GridPane();    //creating a new gridpane for each column selected
@@ -1147,7 +1126,7 @@ public class Main extends Application{
 
                 //check if the number of distinct values is not over 20
                 //otherwise it will not be displayed
-                if (distinct.size() <= 20) {
+                if (distinct.size() <= maxDistinct) {
 
                     distinctText = new Text("Data type: " + check + "\n" +
                             "Length of data: " + c.getData().size() + "\n" +
@@ -1237,7 +1216,7 @@ public class Main extends Application{
         // get the current tab which is opened
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
-            System.out.println("Tab " + tabID + "is being manipulated by user.");
+            //System.out.println("Tab " + tabID + "is being manipulated by user.");
             logFile.addToLog("Tab " + tabID + "is being manipulated by user.");
         }catch (Exception e){
 
@@ -1286,7 +1265,7 @@ public class Main extends Application{
 
                                 if(check.equals("Integer") || check.equals("Double")) {
 
-                                    System.out.println(s);
+                                   // System.out.println(s);
                                     corrData.add(c);
                                 }else{
 
@@ -1329,7 +1308,7 @@ public class Main extends Application{
 
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
-            System.out.println("Tab " + tabID + "is being manipulated by user.");
+           // System.out.println("Tab " + tabID + "is being manipulated by user.");
             logFile.addToLog("Tab " + tabID + " is being manipulated by user");
 
         }catch (Exception e){
@@ -1411,7 +1390,7 @@ public class Main extends Application{
 
         try {
             tabID = tabPane.getSelectionModel().getSelectedItem().getId();
-            System.out.println("Tab " + tabID + "is being manipulated by user.");
+           // System.out.println("Tab " + tabID + "is being manipulated by user.");
             logFile.addToLog("Tab " + tabID + " is being manipulated by user");
         }catch (Exception e){
 

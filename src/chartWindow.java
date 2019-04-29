@@ -59,6 +59,8 @@ public class chartWindow {
 
         //----------------------------------------------------------------button for line chart
         Button lineChart = new Button();
+        Tooltip tLine = new Tooltip("Line chart");
+        lineChart.setTooltip(tLine);
         Image lChart = new Image("picture/lineChart.png");
         ImageView lChartView = new ImageView(lChart);
         lChartView.setFitWidth(40);
@@ -68,6 +70,8 @@ public class chartWindow {
 
         //---------------------------------------------------------------- button for pie chart
         Button pieChart = new Button();
+        Tooltip tPie = new Tooltip("Pie chart");
+        pieChart.setTooltip(tPie);
         Image pChart = new Image("picture/pieChart.png");
         ImageView pChartView = new ImageView(pChart);
         pChartView.setFitWidth(40);
@@ -77,6 +81,8 @@ public class chartWindow {
 
         //----------------------------------------------------------------- button for barchart
         Button barChart = new Button();
+        Tooltip tBar = new Tooltip("Bar chart");
+        barChart.setTooltip(tBar);
         Image bChart = new Image("picture/barChart.png");
         ImageView bChartView = new ImageView(bChart);
         bChartView.setFitWidth(40);
@@ -142,6 +148,13 @@ public class chartWindow {
         }else{
 
         }
+
+        Button back = new Button("Back");
+
+        HBox backArea = new HBox();
+
+        backArea.getChildren().add(back);
+
 
         //pieChart button action
         pieChart.setOnAction(e -> {
@@ -251,12 +264,9 @@ public class chartWindow {
 
                             double total = 0;
 
-                            /*for (PieChart.Data d : chart.getData()) {
-                                total += d.getPieValue();
-                            }*/
-
                             total = Statistics.getSum(num.getData());
 
+                        //Displaying percentage for each slice when mouse is hovered
                         String s = String.format("%.2f%%", (100*data.getPieValue()/total));
                         Tooltip toolTip = new Tooltip(s);
                         Tooltip.install(data.getNode(), toolTip);
@@ -300,6 +310,7 @@ public class chartWindow {
 
                 double total = c.getData().size();
 
+                //Displaying percentage for each slice when mouse is hovered
                 String s = String.format("%.2f%%", (100*data.getPieValue()/total));
                 Tooltip toolTip = new Tooltip(s);
                 Tooltip.install(data.getNode(), toolTip);

@@ -42,7 +42,7 @@ public class manualWindow {
         Text p2 = new Text("To use the sorting function:" + "\n" + "\n" +
                 "1. Select the required columns." + "\n" +
                 "2. Click on the 'Sort asc' to sort in ascending order or " + "\n" +
-                "   or click on the 'Sort desc' to sort in descending order." + "\n" +
+                "   click on the 'Sort desc' to sort in descending order." + "\n" +
                 "   The columns will be displayed accordingly." + "\n" + "\n");
 
 

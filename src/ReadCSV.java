@@ -8,8 +8,8 @@ import java.io.FileReader;
 public class ReadCSV {
 
     /**
-     * function to read the body of a csv file and store it in a 2d array
-     * without storing the first line, which containd the header
+     * method to read the body of the csv file
+     * does not store the first line of the file
      * @param filePath path of csv file
      * @return data[][] containing the data
      * @throws Exception if file cannot be read
@@ -27,12 +27,14 @@ public class ReadCSV {
 
             String line = "";
 
+            String separator = sep(filePath);
+
 
             //get the number of lines and columns in the csv file
             //to initialise the 2d array
             while ((line = br.readLine()) != null){
 
-                String [] columns = line.split(",");
+                String [] columns = line.split(separator);
 
                 col = columns.length;
 
@@ -51,11 +53,14 @@ public class ReadCSV {
 
             while ((line = br.readLine()) != null){
 
-                //to excluding the table header
+                //to exclude the table header
                 if(counterRow > 0){
 
 
-                    String [] column = line.split(",");
+                    String [] column = line.split(separator);
+
+                    //System.out.println(column.length);
+                    //System.out.println(col);
 
                     /*if(column.length != col){
 
@@ -87,30 +92,73 @@ public class ReadCSV {
     }
 
     /**
-     * function to read only the column headers in a csv file, by reading only the first line
+     * method to read only the first line of a csv file
      * @param filePath path of file
-     * @return array containing the header names
+     * @return string[] array containing the header names
      * @throws Exception if file cannot be read
      */
     public static String[] readHeader (String filePath) throws Exception{
 
         String [] header = null;
 
-        //String filepath = "Data.csv";
-
         FileReader fr = new FileReader (filePath);
         BufferedReader br = new BufferedReader (fr);
 
+        String separator = sep(filePath);
 
         for (int i=0; i<1; i++){
 
             String line = br.readLine();
 
-            header = line.split(",");
+            header = line.split(separator);
 
         }
 
         return header;
+    }
+
+    public static String sep (String fn) throws Exception
+    {
+        FileReader fr = new FileReader (fn);
+        BufferedReader br = new BufferedReader (fr);
+        String sep = null;
+
+        try
+        {
+            String line = null;
+            String [] row = null;
+
+            for (int i=0; i<1; i++)
+            {
+                line = br.readLine();
+                row = line.split(",");
+            }
+
+            for(int j=0; j<row.length; j++)
+            {
+                System.out.println(row[j]);
+            }
+
+            System.out.println("Length : "+row.length);
+
+            if (row.length>1)
+            {
+                sep = ",";
+            }
+            else
+            {
+                sep = " ";
+            }
+
+        }
+        catch (Exception E)
+        {
+            System.out.println("+++ReadArrayFile: "+E.getMessage());
+
+        }
+
+        System.out.println("Sep is : "+sep);
+        return sep;
     }
 
 

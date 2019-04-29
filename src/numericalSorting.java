@@ -20,9 +20,14 @@ public class numericalSorting {
             //convert each object to double
             for (Object o : a) {
 
-                double d = Statistics.pDouble(o);
+                if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
 
-                arrayList.add(d);
+                }else {
+
+                    double d = Statistics.pDouble(o);
+                    arrayList.add(d);
+
+                }
 
             }
 

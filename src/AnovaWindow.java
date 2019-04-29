@@ -37,18 +37,7 @@ public class AnovaWindow {
 
             for(Object o: cd.getData()){
 
-                double d = 0.0;
-
-                //Does not take missing values in the array
-                if(o == null || o.toString().length() == 0 || o.toString().equals(" ")){
-
-
-                }else{
-
-                  //converts the objects into double
-                  d = Statistics.pDouble(o);
-
-                }
+                double d = Statistics.pDouble(o);
 
                 temp.add(d);
 

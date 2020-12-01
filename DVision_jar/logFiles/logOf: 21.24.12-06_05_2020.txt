@@ -1,0 +1,14 @@
+File browser opened
+File cw_dataset.csv is selected
+Display table function is pressed
+Tab cw_dataset.csvis being manipulated by user.
+Column selected: Orientation: 2
+Column selected: Orientation: 3
+Display table function is pressed
+Tab cw_dataset.csvis being manipulated by user.
+Column selected: Orientation: 1
+Column selected: Orientation: 2
+Column selected: Orientation: 3
+Error has occurred when trying display the data columns.
+Program close request
+Program closed

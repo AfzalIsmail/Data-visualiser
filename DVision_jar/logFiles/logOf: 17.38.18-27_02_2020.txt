@@ -1,0 +1,12 @@
+File browser opened
+File dataTypes.csv is selected
+Display table function is pressed
+Tab dataTypes.csvis being manipulated by user.
+Column selected: Int
+Column selected: String
+Column selected: Double
+Column selected: Char
+Column selected: Type
+Column selected: Boolean
+Program close request
+Program closed

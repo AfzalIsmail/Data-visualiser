@@ -1,0 +1,24 @@
+File browser opened
+File SacramentocrimeJanuary2006.csv is selected
+Display table function is pressed
+Tab SacramentocrimeJanuary2006.csvis being manipulated by user.
+Column selected: cdatetime
+Column selected: address
+Column selected: district
+Column selected: beat
+Column selected: grid
+Column selected: crimedescr
+Column selected: ucr_ncic_code
+Column selected: latitude
+Column selected: longitude
+Chart button is pressed
+Tab SacramentocrimeJanuary2006.csv is being manipulated by user
+Chart window displayed
+Chart options for file SacramentocrimeJanuary2006.csv is being displayed
+Pie chart and bar chart option available
+All chart options available
+Line chart option available
+Bar chart button selected
+Pie chart button selected
+Program close request
+Program closed

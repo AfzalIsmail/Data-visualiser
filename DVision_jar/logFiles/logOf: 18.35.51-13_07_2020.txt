@@ -1,0 +1,33 @@
+File browser opened
+File HAM10000_metadata.csv is selected
+Display table function is pressed
+Tab HAM10000_metadata.csvis being manipulated by user.
+Column selected: dx
+Display table function is pressed
+Tab HAM10000_metadata.csvis being manipulated by user.
+Column selected: lesion_id
+Column selected: dx
+Error has occurred when trying display the data columns.
+Display table function is pressed
+Tab HAM10000_metadata.csvis being manipulated by user.
+Column selected: lesion_id
+Column selected: image_id
+Column selected: dx
+Error has occurred when trying display the data columns.
+Display table function is pressed
+Tab HAM10000_metadata.csvis being manipulated by user.
+Column selected: lesion_id
+Column selected: image_id
+Column selected: dx
+Column selected: dx_type
+Error has occurred when trying display the data columns.
+Display table function is pressed
+Tab HAM10000_metadata.csvis being manipulated by user.
+Column selected: lesion_id
+Column selected: image_id
+Column selected: dx
+Column selected: dx_type
+Column selected: sex
+Error has occurred when trying display the data columns.
+Program close request
+Program closed

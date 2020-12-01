@@ -1,0 +1,7 @@
+File browser opened
+File cw_dataset.csv is selected
+Correlation coefficient button is pressed
+Tab cw_dataset.csvis being manipulated by user.
+Correlation coefficient between Orientation: 4 and Orientation: 7
+Program close request
+Program closed

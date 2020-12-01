@@ -1,0 +1,5 @@
+File browser opened
+File SampleData_75Var.csv is selected
+Error: The file contains more than 60 attributes
+Program close request
+Program closed

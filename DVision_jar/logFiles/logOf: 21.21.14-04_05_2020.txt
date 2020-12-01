@@ -1,0 +1,22 @@
+File browser opened
+File Team.csv is selected
+Display table function is pressed
+Tab Team.csvis being manipulated by user.
+Column selected: Player_ID
+Column selected: Name
+Column selected: Surname
+Column selected: Gender
+Column selected: Age
+Column selected: Height (m)
+Column selected: Weight (kg)
+Column selected: Muscle Mass (%)
+Column selected: Position
+Column selected: Years active
+Column selected: Goals Against
+Column selected: Avg Goals
+Column selected: Speed (m/h)
+Column selected: Team
+Column selected: Pre-selected
+Column selected: Salary
+Program close request
+Program closed

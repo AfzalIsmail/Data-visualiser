@@ -1,0 +1,19 @@
+File browser opened
+File SampleData_60Var.csv is selected
+Display table function is pressed
+Tab SampleData_60Var.csvis being manipulated by user.
+Column selected: Var_1
+Column selected: Var_2
+Column selected: Var_3
+File browser opened
+File dataTypes.csv is selected
+Display table function is pressed
+Tab dataTypes.csvis being manipulated by user.
+Column selected: String
+Column selected: Double
+Column selected: Char
+Column selected: Type
+File SampleData_60Var.csv is closed
+File dataTypes.csv is closed
+Program close request
+Program closed

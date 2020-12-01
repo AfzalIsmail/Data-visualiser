@@ -1,0 +1,38 @@
+File browser opened
+File exerciseDemo.csv is selected
+Display table function is pressed
+Tab exerciseDemo.csvis being manipulated by user.
+Column selected: Gender
+Column selected: Age
+Column selected: Height
+Column selected: Weight
+Column selected: Heart_Rate
+Column selected: Body_Temp
+Correlation coefficient button is pressed
+Tab exerciseDemo.csvis being manipulated by user.
+Error: More than 2 columns were selected for correlation coefficient
+Anova button is pressed
+Tab exerciseDemo.csv is being manipulated by user
+Columns selected to get the anova:
+- Gender
+- Age
+- Height
+- Weight
+- Heart_Rate
+- Body_Temp
+Correlation coefficient button is pressed
+Tab exerciseDemo.csvis being manipulated by user.
+Correlation coefficient between Height and Weight
+Correlation coefficient button is pressed
+Tab exerciseDemo.csvis being manipulated by user.
+Correlation coefficient between Weight and Heart_Rate
+Correlation coefficient button is pressed
+Tab exerciseDemo.csvis being manipulated by user.
+Correlation coefficient between Heart_Rate and Body_Temp
+Chart button is pressed
+Tab exerciseDemo.csv is being manipulated by user
+Chart window displayed
+Chart options for file exerciseDemo.csv is being displayed
+Line chart option available
+Program close request
+Program closed
